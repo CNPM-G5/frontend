@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Đặt nền và màu chữ mặc định cho toàn bộ body */
+body {
+  @apply bg-background-dark text-text-light font-sans antialiased;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Tùy chỉnh thanh cuộn cho hợp với dark mode (tùy chọn) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #030816;
+}
+::-webkit-scrollbar-thumb {
+  background: #0a1128;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #005bb5;
+}
