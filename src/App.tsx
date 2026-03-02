@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // 1. Import các Context và Route bảo vệ
 import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 import AuthLayout from './layouts/AuthLayout';
 import DashboardLayout from './layouts/DashboardLayout';
@@ -22,15 +22,15 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
-          
+
           {/* Public Routes: Ai cũng vào được */}
           <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
           <Route path="/register" element={<AuthLayout><Register /></AuthLayout>} />
 
           {/* Protected Routes: Bắt buộc Đăng nhập mới được vào */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route index element={<Overview />} /> 
+          <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route path="/dashboard">
+              <Route index element={<Overview />} />
               <Route path="course/:id" element={<CourseDetail />} />
               <Route path="courses" element={<Courses />} />
               <Route path="exercises" element={<Exercises />} />
@@ -38,7 +38,7 @@ function App() {
               <Route path="settings" element={<Settings />} />
             </Route>
           </Route>
-          
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>

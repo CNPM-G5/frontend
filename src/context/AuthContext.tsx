@@ -1,62 +1,58 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-// Định nghĩa kiểu dữ liệu cho User
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  // Thêm các trường khác tùy backend trả về
-}
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getProfileApi } from '../api/authApi';
 
 interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  login: (token: string, userData: User) => void;
+  user: any | null;
+  login: (token: string, userData: any) => void;
   logout: () => void;
+  loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Kiểm tra token khi load lại trang
+  // Khi app khởi động, kiểm tra token còn hợp lệ không
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
+    if (token) {
+      getProfileApi()
+        .then((res) => setUser(res.data.user))
+        .catch(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, []);
 
-  const login = (token: string, userData: User) => {
+  const login = (token: string, userData: any) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
-    setIsAuthenticated(true);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
-    setIsAuthenticated(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-// Custom hook để dùng cho tiện
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
 };
