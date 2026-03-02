@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // Thay bằng URL Backend của nhóm bạn
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
