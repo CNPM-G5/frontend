@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-
+import LessonPage from './pages/dashboard/LessonPage';
 // 1. Import các Context và Route bảo vệ
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -33,6 +33,8 @@ function App() {
               <Route index element={<Overview />} />
               <Route path="course/:id" element={<CourseDetail />} />
               <Route path="courses" element={<Courses />} />
+              {/* Thêm Route cho LessonPage vào đây */}
+              <Route path="lesson/:id" element={<LessonPage />} /> 
               <Route path="exercises" element={<Exercises />} />
               <Route path="progress" element={<Progress />} />
               <Route path="settings" element={<Settings />} />

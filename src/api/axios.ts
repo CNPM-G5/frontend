@@ -1,9 +1,11 @@
 import axios from 'axios';
 
+
+// file nay cau hinh tu dong gan token 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 const axiosClient = axios.create({
-  baseURL: API_URL,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api', 
   headers: {
     'Content-Type': 'application/json',
   },
