@@ -39,9 +39,34 @@ export const courseApi = {
     return []; 
   },
 
-  // Hàm lấy chi tiết 1 khóa học
+  // Hàm lấy chi tiết khóa học
   getCourseByIdApi: async (id: string): Promise<CourseDetailType> => {
     const response = await axiosClient.get(`/courses/${id}`);
-    return response.data;
+    
+    // 1. In log ra để bạn xem chính xác Backend đang gửi cái gì
+    console.log(`Dữ liệu Course ${id} từ Backend:`, response.data);
+
+    let courseData = response.data;
+
+    // 2. Trường hợp Backend bọc tất cả trong biến 'data' (VD: { data: { id: 1, title: '...', lessons: [...] } })
+    if (response.data && response.data.data) {
+      courseData = response.data.data;
+    }
+
+    // 3. Trường hợp Backend tách riêng course và mảng lessons (VD: { course: {...}, lessons: [...] })
+    if (response.data && response.data.course && Array.isArray(response.data.lessons)) {
+      return {
+        ...response.data.course,
+        lessons: response.data.lessons
+      };
+    }
+
+    // 4. Nếu Backend trả về một mảng bài học tên khác (ví dụ 'danh_sach_bai_hoc' hay 'CourseLessons')
+    // Đoạn này ta lót sẵn một mảng rỗng nếu backend thực sự chưa trả về bài học nào
+    if (!courseData.lessons) {
+      courseData.lessons = []; // Đảm bảo FE không bị sập vì lỗi undefined.map
+    }
+
+    return courseData;
   }
 };

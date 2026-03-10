@@ -65,7 +65,7 @@ const CourseDetail = () => {
 
         {(!course.lessons || course.lessons.length === 0) ? (
           <div className="p-8 text-center border rounded-xl bg-background-card border-primary/20 text-text-muted">
-            Khóa học này đang được cập nhật nội dung...
+            Khóa học này đang được cập nhật nội dung......
           </div>
         ) : (
           <div className="space-y-4">

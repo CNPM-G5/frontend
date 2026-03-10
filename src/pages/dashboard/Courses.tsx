@@ -54,7 +54,7 @@ const Courses = () => {
             
             <div className="flex items-center justify-between pt-4 mt-auto border-t border-primary/20">
               <span className="text-sm font-medium text-text-muted flex items-center gap-2">
-                <span className="text-primary">📚</span> {course.lesson_count} bài học
+                <span className="text-primary">📚</span> {course.lesson_count} bài học có sẵn 
               </span>
               {/* Route được trỏ chính xác theo App.tsx của bạn */}
               <Link 
