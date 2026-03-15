@@ -10,6 +10,7 @@ const Sidebar = () => {
     { name: 'Khóa học', path: '/dashboard/courses', icon: '📚' },
     { name: 'Bài tập', path: '/dashboard/exercises', icon: '📝' },
     { name: 'Tiến độ', path: '/dashboard/progress', icon: '📊' },
+    { name: 'Hồ sơ', path: '/dashboard/profile', icon: '👤' },
     { name: 'Cài đặt', path: '/dashboard/settings', icon: '⚙️' },
   ];
 
