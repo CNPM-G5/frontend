@@ -15,6 +15,10 @@ import Exercises from './pages/dashboard/Exercises';
 import Progress from './pages/dashboard/Progress';
 import Settings from './pages/dashboard/Settings';
 
+import AdminRoute from './components/common/AdminRoute';
+import AdminPage from './pages/dashboard/AdminPage';
+import ProfilePage from './pages/dashboard/ProfilePage';
+
 function App() {
   return (
     // 2. Bọc AuthProvider ngoài cùng để toàn app nhận được State Đăng nhập
@@ -33,10 +37,15 @@ function App() {
               <Route index element={<Overview />} />
               <Route path="course/:id" element={<CourseDetail />} />
               <Route path="courses" element={<Courses />} />
-              {/* Thêm Route cho LessonPage vào đây */}
               <Route path="lesson/:id" element={<LessonPage />} /> 
+              <Route path="admin" element={
+                <AdminRoute>
+                  <AdminPage />
+                </AdminRoute>
+              } />              
               <Route path="exercises" element={<Exercises />} />
               <Route path="progress" element={<Progress />} />
+              <Route path="profile" element={<ProfilePage />} />
               <Route path="settings" element={<Settings />} />
             </Route>
           </Route>

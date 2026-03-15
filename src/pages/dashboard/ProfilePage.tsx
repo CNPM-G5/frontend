@@ -1,0 +1,95 @@
+// src/pages/dashboard/ProfilePage.tsx
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+// import { progressApi } from '../../api/progressApi'; // Mở ra khi Backend đã làm xong hàm lấy tổng progress
+
+const ProfilePage = () => {
+  const { user } = useAuth();
+  
+  // State giả lập tổng số bài đã hoàn thành (Sau này thay bằng API thực tế)
+  const [totalCompleted, setTotalCompleted] = useState<number>(0);
+
+  useEffect(() => {
+    // Tương lai: Gọi API lấy tổng số bài học user đã hoàn thành ở đây
+    // Ví dụ: progressApi.getUserTotalProgress().then(res => setTotalCompleted(res.total));
+    setTotalCompleted(15); // Giả lập user này rất chăm chỉ, đã học 15 bài
+  }, []);
+
+  // Xử lý ngày tạo tài khoản (Nếu Backend trả về created_at, nếu không thì lấy ngày hiện tại)
+  const joinDate = user?.created_at 
+    ? new Date(user.created_at).toLocaleDateString('vi-VN') 
+    : 'Chưa cập nhật';
+
+  return (
+    <div className="max-w-4xl mx-auto pb-20">
+      {/* Tiêu đề trang */}
+      <div className="flex items-center gap-4 mb-8">
+        <span className="flex items-center justify-center w-12 h-12 text-2xl border rounded-xl bg-primary/20 border-primary shadow-neon">👤</span>
+        <div>
+          <h1 className="text-3xl font-bold text-text-light">Hồ sơ cá nhân</h1>
+          <p className="text-text-muted">Quản lý thông tin và tiến độ học tập của bạn</p>
+        </div>
+      </div>
+
+      {/* Khung thông tin chính (Responsive: Dọc trên Mobile, Ngang trên Desktop) */}
+      <div className="flex flex-col md:flex-row gap-8">
+        
+        {/* Cột trái: Card Avatar & Thông tin cơ bản */}
+        <div className="flex-1 p-8 text-center border rounded-xl bg-background-sidebar border-primary/20 flex flex-col items-center shadow-neon">
+          <div className="relative mb-6">
+            <div className="w-32 h-32 overflow-hidden border-4 rounded-full bg-background-dark border-primary shadow-[0_0_20px_rgba(0,210,255,0.3)]">
+              {/* Nếu user có avatar_url thì dùng thẻ img, hiện tại dùng icon */}
+              <span className="flex items-center justify-center w-full h-full text-6xl">🧑‍💻</span>
+            </div>
+            <span className="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-2 border-background-sidebar rounded-full shadow-[0_0_10px_rgba(34,197,94,0.8)]"></span>
+          </div>
+          
+          <h2 className="text-2xl font-bold text-text-light">{user?.name || 'Học viên IT'}</h2>
+          <p className="text-primary font-medium mb-4">{user?.email || 'email@example.com'}</p>
+          
+          <div className="w-full h-px bg-primary/20 my-4"></div>
+          
+          <div className="flex justify-between w-full text-sm">
+            <span className="text-text-muted">Vai trò:</span>
+            <span className="font-bold text-text-light uppercase">{user?.role || 'User'}</span>
+          </div>
+          <div className="flex justify-between w-full text-sm mt-2">
+            <span className="text-text-muted">Ngày tham gia:</span>
+            <span className="font-bold text-text-light">{joinDate}</span>
+          </div>
+        </div>
+
+        {/* Cột phải: Thống kê & Thành tích */}
+        <div className="flex-1 flex flex-col gap-6">
+          {/* Box Thống kê tiến độ */}
+          <div className="p-6 border rounded-xl bg-background-card border-primary/20 hover:border-primary transition-colors duration-300">
+            <h3 className="text-lg font-bold text-text-light mb-2 flex items-center gap-2">
+              <span className="text-primary">🏆</span> Tổng số bài đã hoàn thành
+            </h3>
+            <div className="flex items-end gap-3 mt-4">
+              <span className="text-5xl font-black text-transparent bg-clip-text bg-gradient-primary drop-shadow-neon">
+                {totalCompleted}
+              </span>
+              <span className="text-text-muted mb-2">bài học</span>
+            </div>
+          </div>
+
+          {/* Bạn có thể chế thêm một Box "Huy hiệu" hoặc "Khóa học đang theo học" để giao diện không bị trống */}
+          <div className="p-6 border rounded-xl bg-background-card border-primary/20 flex-1">
+            <h3 className="text-lg font-bold text-text-light mb-4">Trạng thái tài khoản</h3>
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-green-500/10 border border-green-500/30">
+              <span className="text-2xl">✅</span>
+              <div>
+                <p className="font-bold text-green-400">Tài khoản đang hoạt động</p>
+                <p className="text-sm text-green-500/70">Bạn có thể truy cập toàn bộ nội dung khóa học.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default ProfilePage;

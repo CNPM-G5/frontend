@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { lessonApi, LessonDetail } from '../../api/lessonApi';
+import AiChat from '../../components/common/AiChat';
 
 const LessonPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -116,6 +117,7 @@ const LessonPage = () => {
           </button>
         )}
       </div>
+      {lesson && <AiChat lessonId={lesson.id} />}
     </div>
   );
 };
