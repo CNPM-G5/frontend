@@ -1,19 +1,24 @@
-// src/api/aiApi.ts
 import axiosClient from './axios';
 
-export interface AiChatResponse {
-  reply: string;
-  degraded?: boolean; // Backend trả về true nếu AI bị lỗi/quá tải
-  message? : string;
+export interface AiResponse {
+  message: string;
+  reply?: string;
+  hasContext: boolean;
+  degraded: boolean;
+  lessonId?: number | null;
+  courseId?: number | null;
 }
 
+export const chatWithAiApi = async (
+  message: string,
+  lessonId?: number | string,
+  courseId?: number
+): Promise<AiResponse> => {
+  const response = await axiosClient.post('/ai/chat', { message, lessonId, courseId });
+  return response.data.data;
+};
+
+// Object-style export cho AiChat.tsx
 export const aiApi = {
-  chatWithAiApi: async (lessonId: number | string, message: string): Promise<AiChatResponse> => {
-    // Gọi API POST theo đúng đặc tả của Tuân/Hiếu
-    const response = await axiosClient.post('/ai/chat', {
-      lessonId,
-      message
-    });
-    return response.data;
-  }
+  chatWithAiApi,
 };

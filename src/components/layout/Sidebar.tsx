@@ -1,6 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; // 1. Import useAuth
-
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 const Sidebar = () => {
   const { user, logout } = useAuth(); // 2. Lấy thông tin user và hàm logout từ Context
   const navigate = useNavigate(); // 3. Dùng để chuyển hướng sau khi đăng xuất
@@ -25,9 +24,9 @@ const Sidebar = () => {
       {/* Logo */}
       <div className="flex items-center gap-3 p-6 border-b border-primary/20">
         <div className="flex items-center justify-center w-8 h-8 border-2 rounded-md border-primary shadow-neon">
-          <span className="text-xs font-bold text-primary">SH</span>
+          <span className="text-xs font-bold text-primary">TV</span>
         </div>
-        <h1 className="text-xl font-bold text-text-light">Software Hub</h1>
+        <h1 className="text-xl font-bold text-text-light">Team Vip</h1>
       </div>
 
       {/* Menu Links */}
@@ -53,18 +52,17 @@ const Sidebar = () => {
 
       {/* User Profile (Góc dưới cùng) */}
       <div className="flex items-center justify-between p-4 m-4 border rounded-lg bg-background-card border-primary/20">
-        <div className="flex items-center gap-3">
+        <Link to="/dashboard/profile" className="flex items-center gap-3 transition-opacity cursor-pointer hover:opacity-70">
           <div className="flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-700 border rounded-full border-primary">
             <span className="text-lg">👤</span>
           </div>
           <div className="max-w-[100px] overflow-hidden">
-            {/* 4. Hiển thị email của user đang đăng nhập (cắt bớt nếu quá dài) */}
             <p className="text-sm font-semibold truncate text-text-light" title={user?.email}>
               {user?.email || 'Guest'}
             </p>
             <p className="text-xs text-text-muted">Online</p>
           </div>
-        </div>
+        </Link>
         
         {/* Nút Đăng xuất */}
         <button 

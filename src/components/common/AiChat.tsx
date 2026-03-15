@@ -10,9 +10,10 @@ interface Message {
 
 interface AiChatProps {
   lessonId: number | string;
+  courseId?: number;
 }
 
-const AiChat: React.FC<AiChatProps> = ({ lessonId }) => {
+const AiChat: React.FC<AiChatProps> = ({ lessonId, courseId }) => {
   const [messages, setMessages] = useState<Message[]>([
     { id: '1', sender: 'ai', text: 'Chào bạn! Mình là trợ lý AI. Bạn có câu hỏi nào về bài học này không?' }
   ]);
@@ -37,7 +38,7 @@ const AiChat: React.FC<AiChatProps> = ({ lessonId }) => {
     setIsDegraded(false);
 
     try {
-      const response = await aiApi.chatWithAiApi(lessonId, userMsg.text);
+      const response = await aiApi.chatWithAiApi(userMsg.text, lessonId, courseId);
       
       // Nếu backend báo AI lỗi và trả về câu trả lời dự phòng
       if (response.degraded) {

@@ -91,23 +91,10 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          className="w-full py-3 font-semibold text-white transition-all rounded-lg bg-gradient-primary hover:shadow-neon"
-        >
+          className="w-full py-3 font-semibold text-white transition-all rounded-lg bg-gradient-primary hover:shadow-neon">
           Đăng nhập
         </button>
 
-        <div className="flex items-center justify-center gap-2 my-4 text-text-muted">
-          <span className="w-1/4 h-px bg-text-muted/30"></span>
-          <span className="text-sm">hoặc</span>
-          <span className="w-1/4 h-px bg-text-muted/30"></span>
-        </div>
-
-        <button
-          type="button"
-          className="flex items-center justify-center w-full gap-2 py-3 font-semibold transition-all bg-transparent border rounded-lg text-text-light border-text-muted/40 hover:border-primary hover:text-primary"
-        >
-          <span className="font-bold text-red-500">G</span> Đăng nhập bằng Google
-        </button>
       </form>
 
       {/* Nút chuyển sang trang đăng ký */}

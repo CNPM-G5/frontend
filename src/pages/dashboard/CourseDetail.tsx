@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { courseApi, CourseDetailType } from '../../api/courseApi';
-import { progressApi, CourseProgress } from '../../api/progressApi'; // Import API mới
+import { progressApi, CourseProgress } from '../../api/progressApi';
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
