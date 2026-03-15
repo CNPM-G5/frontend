@@ -15,9 +15,9 @@ export const lessonApi = {
   // Lấy chi tiết bài học (Kèm token để lấy cả progress nếu có)
   getLessonByIdApi: async (id: string): Promise<LessonDetail> => {
     const response = await axiosClient.get(`/lessons/${id}`);
-    // Phòng thủ trường hợp Backend gói data
-    if (response.data && response.data.data) return response.data.data;
-    return response.data;
+    const raw = response.data?.data ?? response.data;
+    // Backend trả về field "completed", map sang "is_completed" cho FE
+    return { ...raw, is_completed: raw.completed ?? raw.is_completed ?? false };
   },
 
   // Đánh dấu hoàn thành bài học

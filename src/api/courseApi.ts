@@ -17,20 +17,6 @@ export interface Lesson {
     is_completed? : boolean;
 }
 
-export interface CourseProgress {
-  total: number;       // Tổng số bài
-  completed: number;   // Số bài đã hoàn thành
-  percentage: number;  // % progress
-  completedLessonIds?: number[]; // Mảng chứa ID các bài đã xong (nếu Backend trả về)
-}
-
-export const progressApi = {
-  getCourseProgressApi: async (courseId: string): Promise<CourseProgress> => {
-    const response = await axiosClient.get(`/progress/${courseId}`);
-    return response.data;
-  }
-};
-
 // Mở rộng Course thêm mảng lessons
 export interface CourseDetailType extends Course {
   lessons: Lesson[];
