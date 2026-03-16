@@ -62,8 +62,8 @@ const Register = () => {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-16">
-            <div className="flex items-center justify-center w-10 h-10 border rounded border-primary text-primary font-bold">SH</div>
-            <span className="text-xl font-bold text-text-white">Software Hub</span>
+            <div className="flex items-center justify-center w-10 h-10 border rounded border-primary text-primary font-bold">PL</div>
+            <span className="text-xl font-bold text-text-white">Plearn</span>
           </div>
 
           <p className="mb-4 text-xs font-bold tracking-widest uppercase text-primary">Bắt đầu hành trình</p>
