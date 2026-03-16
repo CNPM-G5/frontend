@@ -7,8 +7,6 @@ const Sidebar = () => {
   const menuItems = [
     { name: 'Tổng quan', path: '/dashboard' },
     { name: 'Khóa học', path: '/dashboard/courses' },
-    { name: 'Bài tập', path: '/dashboard/exercises' },
-    { name: 'Tiến độ', path: '/dashboard/progress'},
     { name: 'Hồ sơ', path: '/dashboard/profile'},
     { name: 'Cài đặt', path: '/dashboard/settings'},
   ];

@@ -1,60 +1,97 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { courseApi } from '../../api/courseApi';
+import { progressApi } from '../../api/progressApi';
 
 const Overview = () => {
-  // Dữ liệu 6 bài học dựa trên bản thiết kế Frame 1 của bạn
-  const courses = [
-    { id: '01', title: '[Giới thiệu] Công nghệ phần mềm', desc: 'Tổng quan về môn học' },
-    { 
-      id: '02', 
-      title: 'Mô hình phát triển phần mềm', 
-      desc: 'Iterative Incremental, Waterfall, Agile...', 
-      highlight: true // Đánh dấu đặc biệt cho thẻ này theo ý nhóm trưởng
-    },
-    { id: '03', title: 'Phân tích & Thiết kế Phần mềm', desc: 'Sơ đồ lớp, Sơ đồ trình tự (UML)...'},
-    { id: '04', title: 'Quản lý Dự án Công nghệ phần mềm', desc: 'Lập kế hoạch, Tiến độ...' },
-    { id: '05', title: 'Kiểm thử Phần mềm (Testing)', desc: 'Test Case, Kiểm thử tự động...' },
-    { id: '06', title: 'Triển khai & Bảo trì', desc: 'Deployment, Bảo trì hệ thống...' },
-  ];
+  const [coursesProgress, setCoursesProgress] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProgressData = async () => {
+      try {
+        setLoading(true);
+        // 1. Gọi API lấy danh sách toàn bộ khóa học
+        const res : any = await courseApi.getAllCoursesApi();
+        // Xử lý an toàn để luôn lấy ra mảng
+        const courses = Array.isArray(res) ? res : res.data || [];
+
+        // 2. Lấy % tiến độ cho từng khóa học
+        const promises = courses.map(async (course: any) => {
+          try {
+            const progress = await progressApi.getCourseProgressApi(course.id);
+            return { ...course, progressPercentage: progress.percentage || 0 };
+          } catch (error) {
+            // Nếu API progress lỗi (ví dụ user chưa học bài nào), mặc định 0%
+            return { ...course, progressPercentage: 0 };
+          }
+        });
+
+        const fullData = await Promise.all(promises);
+        setCoursesProgress(fullData);
+      } catch (error) {
+        console.error("Lỗi tải tiến độ trang chủ:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProgressData();
+  }, []);
 
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* Tiêu đề trang */}
-      <div className="flex items-center justify-center mb-10">
-        <div className="w-16 h-px bg-gradient-to-r from-transparent to-primary"></div>
-        <h1 className="px-6 text-2xl font-bold tracking-widest text-transparent uppercase bg-clip-text bg-gradient-primary">
-          Nội dung môn học
-        </h1>
-        <div className="w-16 h-px bg-gradient-to-l from-transparent to-primary"></div>
-      </div>
-
-      {/* Lưới chứa 6 thẻ khóa học */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {courses.map((course) => (
-          <Link 
-            to={`/dashboard/course/${course.id}`} // Đường dẫn dự kiến khi click vào thẻ
-            key={course.id}
-            className={`relative group p-6 rounded-xl border transition-all duration-300 bg-background-card flex flex-col h-full
-              `}
-          >
-            <div className="flex items-start justify-between mb-4">
-              <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-primary opacity-80">
-                {course.id}
-              </span>
-            </div>
+    <div className="max-w-6xl mx-auto pb-20">
+      {/* KHU VỰC 6 MỤC THỐNG KÊ (Giữ nguyên code cũ của bạn ở đây) */}
+      {/* KHU VỰC MỚI: TIẾN ĐỘ KHÓA HỌC (Chuẩn UI thiết kế mới) */}
+      <h2 className="text-2xl font-bold text-text-light mb-6">Khóa học của bạn</h2>
+      
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <div className="w-8 h-8 border-4 rounded-full border-t-primary border-[#e2dcd0] animate-spin"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {coursesProgress.map((course, index) => {
+            // Format số thứ tự thành 01, 02, 03...
+            const orderNumber = (index + 1).toString().padStart(2, '0');
             
-            <h3 className="mb-2 text-lg font-bold text-text-light group-hover:text-primary transition-colors">
-              {course.title}
-            </h3>
-            
-            <p className="mt-auto text-sm text-text-muted">
-              {course.desc}
-            </p>
-
-            {/* Hiệu ứng viền sáng chạy dọc (Trang trí thêm cho ngầu) */}
-            <div className="absolute top-0 left-0 w-1 h-full rounded-l-xl bg-gradient-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          </Link>
-        ))}
-      </div>
+            return (
+              <Link 
+                to={`/dashboard/course/${course.id}`} 
+                key={course.id}
+                className="block p-8 transition-all bg-white border shadow-sm rounded-2xl border-[#e2dcd0] hover:border-primary hover:shadow-neon group"
+              >
+                {/* Số thứ tự in mờ (Typography nhấn mạnh) */}
+                <div className="mb-2 text-5xl font-black text-[#f0ebe1] transition-colors group-hover:text-[#e8dccb]">
+                  {orderNumber}
+                </div>
+                
+                {/* Tiêu đề & Mô tả */}
+                <h3 className="mb-2 text-xl font-bold text-text-light line-clamp-1">
+                  {course.title}
+                </h3>
+                <p className="mb-8 text-sm text-text-muted line-clamp-1">
+                  {course.description || "Tổng quan về môn học"}
+                </p>
+                
+                {/* Thanh Progress */}
+                <div>
+                  <div className="flex justify-between mb-2 text-sm font-bold">
+                    <span className="text-text-muted">Tiến độ</span>
+                    <span className="text-text-light">{course.progressPercentage}%</span>
+                  </div>
+                  <div className="w-full h-3 overflow-hidden bg-[#f0ebe1] rounded-full">
+                    <div 
+                      className="h-full transition-all duration-1000 bg-primary"
+                      style={{ width: `${course.progressPercentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

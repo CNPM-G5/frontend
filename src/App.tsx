@@ -11,8 +11,6 @@ import Register from './pages/auth/Register';
 import Overview from './pages/dashboard/Overview';
 import CourseDetail from './pages/dashboard/CourseDetail';
 import Courses from './pages/dashboard/Courses';
-import Exercises from './pages/dashboard/Exercises';
-import Progress from './pages/dashboard/Progress';
 import Settings from './pages/dashboard/Settings';
 
 import AdminRoute from './components/common/AdminRoute';
@@ -43,8 +41,6 @@ function App() {
                   <AdminPage />
                 </AdminRoute>
               } />              
-              <Route path="exercises" element={<Exercises />} />
-              <Route path="progress" element={<Progress />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="settings" element={<Settings />} />
             </Route>
