@@ -120,7 +120,7 @@ const LessonPage = () => {
           </button>
         )}
       </div>
-      {lesson && <AiChat lessonId={lesson.id} />}
+      {lesson && <AiChat lessonId={lesson.id} courseId={lesson.course_id} />}
     </div>
   );
 };
