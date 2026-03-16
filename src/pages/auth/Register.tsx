@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import axiosClient from '../../api/axios'; // Nhớ mở comment dòng này nếu nhóm bạn dùng axios trực tiếp để gọi API đăng ký
+import axiosClient from '../../api/axios'; 
+import { registerApi } from '../../api/authApi';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -35,21 +36,21 @@ const Register = () => {
     }
 
     setLoading(true);
-    try {
-      // 3. Gọi API Đăng ký xuống Backend (Bạn chỉnh lại hàm này theo đúng API của Tuân/Hiếu nhé)
-      // Ví dụ: await axiosClient.post('/register', { name: cleanName, email: cleanEmail, password: cleanPassword });
-      
-      // Giả lập API gọi thành công (Tạm thời)
-      console.log("Đăng ký thành công với:", { cleanName, cleanEmail, cleanPassword });
-      
-      alert('🎉 Đăng ký thành công! Vui lòng đăng nhập.');
-      navigate('/login'); // Chuyển hướng người dùng về trang Đăng nhập
-      
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Đăng ký thất bại. Email này có thể đã được sử dụng!');
-    } finally {
-      setLoading(false);
-    }
+      try {
+        await registerApi({ 
+          name: cleanName, 
+          email: cleanEmail, 
+          password: cleanPassword 
+        });
+        
+        alert(' Đăng ký thành công! Vui lòng đăng nhập.');
+        navigate('/login'); 
+        
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'Đăng ký thất bại. Email này có thể đã được sử dụng!');
+      } finally {
+        setLoading(false);
+      }
   };
 
   return (

@@ -55,21 +55,6 @@ const Login = () => {
           <p className="max-w-md mb-12 leading-relaxed text-text-muted">
             Nền tảng học Software Engineering toàn diện — từ kiến trúc hệ thống đến DevOps. Dành cho sinh viên CNTT và lập trình viên chuyên nghiệp.
           </p>
-
-          <div className="space-y-5">
-            <div className="flex items-center gap-4 text-text-muted">
-              <span className="flex items-center justify-center w-8 h-8 rounded bg-white/5">📐</span>
-              <span>6 bài học chuyên sâu với nội dung đầy đủ</span>
-            </div>
-            <div className="flex items-center gap-4 text-text-muted">
-              <span className="flex items-center justify-center w-8 h-8 rounded bg-white/5">✍️</span>
-              <span>Bài tập quiz kiểm tra sau mỗi bài</span>
-            </div>
-            <div className="flex items-center gap-4 text-text-muted">
-              <span className="flex items-center justify-center w-8 h-8 rounded bg-white/5">🏆</span>
-              <span>Theo dõi tiến độ học tập cá nhân</span>
-            </div>
-          </div>
         </div>
       </div>
 
