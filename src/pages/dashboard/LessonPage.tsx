@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { lessonApi, LessonDetail } from '../../api/lessonApi';
 import AiChat from '../../components/common/AiChat';
+import axiosClient from '../../api/axios';
 
 const LessonPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -10,7 +11,9 @@ const LessonPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [completing, setCompleting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCompleting, setIsCompleting] = useState(false);
 
+  
   // Lấy dữ liệu bài học
   useEffect(() => {
     const fetchLesson = async () => {

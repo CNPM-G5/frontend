@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -7,30 +7,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Hệ thống màu tùy chỉnh dựa trên Figma của bạn
-        primary: {
-          DEFAULT: '#00d2ff', // Xanh neon sáng (dùng cho viền, chữ nổi bật, nút bấm)
-          dark: '#005bb5',    // Xanh đậm (dùng cho gradient hoặc hover)
-        },
+        primary: '#b88645', // Màu Vàng Nâu (Gold) của nút bấm
+        'primary-dark': '#9c7038',
         background: {
-          dark: '#030816',    // Màu nền tối nhất (không gian vũ trụ phía sau)
-          card: '#0a1128',    // Màu nền của các form, box, thẻ bài học
-          sidebar: '#050b1a', // Màu nền cho thanh Sidebar
+          dark: '#fdfbf7',    // Đổi nền đen thành nền Kem Sáng (áp dụng cho toàn bộ web)
+          sidebar: '#f5f0e6', // Nền sidebar (Kem đậm hơn một chút để phân biệt)
+          card: '#ffffff',    // Nền thẻ Card (Trắng tinh)
+          brown: '#23201c',   // Màu nâu đen đậm (Dành riêng cho nửa trái của form Đăng nhập)
         },
         text: {
-          light: '#f1f5f9',   // Màu chữ trắng sáng (tiêu đề)
-          muted: '#94a3b8',   // Màu chữ xám nhạt (mô tả phụ)
+          light: '#23201c',   // Chữ trắng cũ giờ đổi thành Chữ Đen Nâu để nổi trên nền kem
+          muted: '#7a756d',   // Chữ xám phụ
+          white: '#ffffff',   // Chữ trắng (Chỉ dùng cho các đoạn text nằm trên nền nâu đậm)
         }
       },
-      boxShadow: {
-        // Hiệu ứng viền phát sáng đặc trưng trong thiết kế
-        'neon': '0 0 10px rgba(0, 210, 255, 0.4), 0 0 20px rgba(0, 210, 255, 0.2)', 
-        'neon-strong': '0 0 15px rgba(0, 210, 255, 0.6), 0 0 30px rgba(0, 210, 255, 0.4)',
-      },
       backgroundImage: {
-        'gradient-primary': 'linear-gradient(to right, #005bb5, #00d2ff)',
-      } , 
-      animation: { 'spin-slow' : 'spin 3s linear infinite'} 
+        'gradient-primary': 'linear-gradient(to right, #cda059, #b88645)',
+      },
+      boxShadow: {
+        'neon': '0 4px 15px rgba(184, 134, 69, 0.2)', // Đổi bóng neon xanh thành bóng vàng sang trọng
+      }
     },
   },
   plugins: [],

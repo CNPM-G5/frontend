@@ -5,12 +5,12 @@ const Sidebar = () => {
   const navigate = useNavigate(); // 3. Dùng để chuyển hướng sau khi đăng xuất
 
   const menuItems = [
-    { name: 'Tổng quan', path: '/dashboard', icon: '🏠' },
-    { name: 'Khóa học', path: '/dashboard/courses', icon: '📚' },
-    { name: 'Bài tập', path: '/dashboard/exercises', icon: '📝' },
-    { name: 'Tiến độ', path: '/dashboard/progress', icon: '📊' },
-    { name: 'Hồ sơ', path: '/dashboard/profile', icon: '👤' },
-    { name: 'Cài đặt', path: '/dashboard/settings', icon: '⚙️' },
+    { name: 'Tổng quan', path: '/dashboard' },
+    { name: 'Khóa học', path: '/dashboard/courses' },
+    { name: 'Bài tập', path: '/dashboard/exercises' },
+    { name: 'Tiến độ', path: '/dashboard/progress'},
+    { name: 'Hồ sơ', path: '/dashboard/profile'},
+    { name: 'Cài đặt', path: '/dashboard/settings'},
   ];
 
   // Hàm xử lý Đăng xuất
@@ -24,9 +24,9 @@ const Sidebar = () => {
       {/* Logo */}
       <div className="flex items-center gap-3 p-6 border-b border-primary/20">
         <div className="flex items-center justify-center w-8 h-8 border-2 rounded-md border-primary shadow-neon">
-          <span className="text-xs font-bold text-primary">TV</span>
+          <span className="text-xs font-bold text-primary">PL</span>
         </div>
-        <h1 className="text-xl font-bold text-text-light">Team Vip</h1>
+        <h1 className="text-xl font-bold text-text-light">PLearn</h1>
       </div>
 
       {/* Menu Links */}
@@ -44,7 +44,6 @@ const Sidebar = () => {
               }`
             }
           >
-            <span className="text-xl">{item.icon}</span>
             <span className="font-medium">{item.name}</span>
           </NavLink>
         ))}
