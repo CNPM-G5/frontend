@@ -1,4 +1,42 @@
+import { useState } from 'react';
+import { changePasswordApi } from '../../api/authApi';
+
 const Settings = () => {
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleChangePassword = async () => {
+    setMessage(null);
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      setMessage({ type: 'error', text: 'Vui lòng điền đầy đủ thông tin.' });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setMessage({ type: 'error', text: 'Mật khẩu mới không khớp.' });
+      return;
+    }
+    if (newPassword.length < 6) {
+      setMessage({ type: 'error', text: 'Mật khẩu mới phải có ít nhất 6 ký tự.' });
+      return;
+    }
+    try {
+      setLoading(true);
+      await changePasswordApi({ oldPassword, newPassword });
+      setMessage({ type: 'success', text: 'Đổi mật khẩu thành công!' });
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'Đổi mật khẩu thất bại. Vui lòng thử lại.';
+      setMessage({ type: 'error', text: msg });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto pb-20">
       <div className="flex items-center gap-4 mb-8 relative">
@@ -15,68 +53,67 @@ const Settings = () => {
           }}
         />
 
-        {/* Icon với pulse ring */}
-        <span
-          className="relative flex items-center justify-center w-12 h-12 text-2xl border rounded-xl bg-primary/20 border-primary shadow-neon"
-          style={{ zIndex: 1 }}
-        >
-          {/* Animated ring */}
-          <span
-            style={{
-              position: "absolute",
-              inset: -3,
-              borderRadius: "0.85rem",
-              border: "1.5px solid rgba(99,102,241,0.45)",
-              animation: "settingsPulse 2.4s ease-in-out infinite",
-              pointerEvents: "none",
-            }}
-          />
-          <span
-            style={{
-              position: "absolute",
-              inset: -7,
-              borderRadius: "1.1rem",
-              border: "1px solid rgba(99,102,241,0.18)",
-              animation: "settingsPulse 2.4s ease-in-out infinite 0.5s",
-              pointerEvents: "none",
-            }}
-          />
-          ⚙️
-        </span>
+        <div className="space-y-6">
+          {/* Đổi mật khẩu */}
+          <div className="p-6 border rounded-xl bg-background-sidebar border-primary/20">
+            <h2 className="mb-4 text-xl font-bold text-primary">Bảo mật tài khoản</h2>
 
-        {/* Text với fade-in slide */}
-        <div style={{ zIndex: 1 }}>
-          <h1
-            className="text-3xl font-bold text-text-light"
-            style={{
-              animation: "settingsFadeUp 0.6s cubic-bezier(0.22,1,0.36,1) both",
-            }}
-          >
-            Cài đặt hệ thống
-          </h1>
-          <p
-            className="text-text-muted"
-            style={{
-              animation:
-                "settingsFadeUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s both",
-            }}
-          >
-            Tùy chỉnh trải nghiệm và bảo mật tài khoản
-          </p>
+            {message && (
+              <div className={`mb-4 px-4 py-3 rounded-lg text-sm font-medium border ${message.type === 'success'
+                ? 'bg-green-500/10 border-green-500/30 text-green-400'
+                : 'bg-red-500/10 border-red-500/30 text-red-400'
+                }`}>
+                {message.type === 'success' ? '✅' : '❌'} {message.text}
+              </div>
+            )}
+
+            <div className="space-y-4 max-w-md">
+              <div>
+                <label className="block text-sm text-text-muted mb-1">Mật khẩu hiện tại</label>
+                <input
+                  type="password"
+                  value={oldPassword}
+                  onChange={e => setOldPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full p-3 bg-background-dark border rounded-lg outline-none border-primary/40 text-text-light focus:border-primary focus:shadow-neon transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-text-muted mb-1">Mật khẩu mới</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full p-3 bg-background-dark border rounded-lg outline-none border-primary/40 text-text-light focus:border-primary focus:shadow-neon transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-text-muted mb-1">Xác nhận mật khẩu mới</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full p-3 bg-background-dark border rounded-lg outline-none border-primary/40 text-text-light focus:border-primary focus:shadow-neon transition-all"
+                />
+              </div>
+              <button
+                onClick={handleChangePassword}
+                disabled={loading}
+                className="flex items-center gap-2 px-6 py-2 mt-2 font-bold text-white transition-all rounded-lg bg-gradient-primary hover:shadow-neon disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading && <span className="w-4 h-4 border-2 rounded-full border-t-white border-white/30 animate-spin" />}
+                {loading ? 'Đang lưu...' : 'Đổi mật khẩu'}
+              </button>
+            </div>
+          </div>
+
         </div>
-
-        <style>{`
-          @keyframes settingsPulse {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 0.15; transform: scale(1.06); }
-          }
-          @keyframes settingsFadeUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
-          }
-        `}</style>
       </div>
     </div>
+
   );
 };
+
 export default Settings;

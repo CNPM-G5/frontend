@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axiosClient from '../../api/axios'; 
+import axiosClient from '../../api/axios';
 import { registerApi } from '../../api/authApi';
 
 const Register = () => {
   const navigate = useNavigate();
-  
+
   // Các state lưu trữ thông tin đăng ký
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -36,26 +36,26 @@ const Register = () => {
     }
 
     setLoading(true);
-      try {
-        await registerApi({ 
-          name: cleanName, 
-          email: cleanEmail, 
-          password: cleanPassword 
-        });
-        
-        alert(' Đăng ký thành công! Vui lòng đăng nhập.');
-        navigate('/login'); 
-        
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Đăng ký thất bại. Email này có thể đã được sử dụng!');
-      } finally {
-        setLoading(false);
-      }
+    try {
+      await registerApi({
+        name: cleanName,
+        email: cleanEmail,
+        password: cleanPassword
+      });
+
+      alert(' Đăng ký thành công! Vui lòng đăng nhập.');
+      navigate('/login');
+
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Đăng ký thất bại. Email này có thể đã được sử dụng!');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex min-h-screen font-sans w-full m-0 p-0 absolute top-0 left-0 bg-background-dark">
-      
+
       {/* NỬA TRÁI (Màu nâu đen) - Giữ nguyên thiết kế branding */}
       <div className="hidden md:flex md:w-1/2 bg-background-brown p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
@@ -63,7 +63,7 @@ const Register = () => {
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-16">
             <div className="flex items-center justify-center w-10 h-10 border rounded border-primary text-primary font-bold">PL</div>
-            <span className="text-xl font-bold text-text-white">Plearn</span>
+            <span className="text-xl font-bold text-text-white">PLearn</span>
           </div>
 
           <p className="mb-4 text-xs font-bold tracking-widest uppercase text-primary">Bắt đầu hành trình</p>
@@ -78,7 +78,7 @@ const Register = () => {
 
       {/* NỬA PHẢI (Màu kem sáng) - Khu vực Form */}
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8 relative bg-background-dark overflow-y-auto">
-        
+
         {/* Cụm Toggle Đăng nhập / Đăng ký (Đã đảo màu sáng cho nút Đăng Ký) */}
         <div className="absolute flex p-1 rounded-full top-8 bg-background-sidebar border border-[#e2dcd0]">
           <Link to="/login" className="px-8 py-2 font-bold transition-colors text-text-muted hover:text-text-light">Đăng Nhập</Link>
@@ -102,8 +102,8 @@ const Register = () => {
           <div className="space-y-5">
             <div>
               <label className="block mb-2 text-xs font-bold tracking-wider uppercase text-text-muted">Tên của bạn</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="VD: Nguyễn Văn A"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -113,8 +113,8 @@ const Register = () => {
 
             <div>
               <label className="block mb-2 text-xs font-bold tracking-wider uppercase text-text-muted">Email</label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -125,8 +125,8 @@ const Register = () => {
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div>
                 <label className="block mb-2 text-xs font-bold tracking-wider uppercase text-text-muted">Mật khẩu</label>
-                <input 
-                  type="password" 
+                <input
+                  type="password"
                   placeholder="Nhập mật khẩu"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -136,8 +136,8 @@ const Register = () => {
 
               <div>
                 <label className="block mb-2 text-xs font-bold tracking-wider uppercase text-text-muted">Nhập lại</label>
-                <input 
-                  type="password" 
+                <input
+                  type="password"
                   placeholder="Xác nhận mật khẩu"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -146,15 +146,15 @@ const Register = () => {
               </div>
             </div>
 
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={handleRegister}
               disabled={loading}
               className="w-full py-4 mt-8 font-bold tracking-widest text-white uppercase transition-all rounded-lg bg-primary hover:bg-primary-dark disabled:opacity-50 shadow-neon"
             >
               {loading ? 'Đang xử lý...' : 'Đăng ký ngay'}
             </button>
-            
+
             <p className="text-xs text-center text-text-muted mt-4">
               Bằng việc đăng ký, bạn đồng ý với <a href="#" className="underline hover:text-primary">Điều khoản dịch vụ</a> và <a href="#" className="underline hover:text-primary">Chính sách bảo mật</a> của chúng tôi.
             </p>
