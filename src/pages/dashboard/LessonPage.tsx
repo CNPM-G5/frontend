@@ -13,7 +13,7 @@ const LessonPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
 
-  
+
   // Lấy dữ liệu bài học
   useEffect(() => {
     const fetchLesson = async () => {
@@ -32,13 +32,18 @@ const LessonPage = () => {
     fetchLesson();
   }, [id]);
 
+  // Cuộn lên đầu trang khi lesson ID thay đổi
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
   // Hàm xử lý khi bấm nút "Đánh dấu hoàn thành"
   const handleComplete = async () => {
     if (!id || !lesson) return;
     try {
       setCompleting(true);
       await lessonApi.completeLessonApi(id);
-      
+
       // Cập nhật lại UI state ngay lập tức mà không cần gọi lại API
       setLesson({ ...lesson, is_completed: true });
     } catch (err) {
@@ -82,8 +87,8 @@ const LessonPage = () => {
       {/* Khung nhúng Slide (Iframe) */}
       {lesson.slide_url && (
         <div className="w-full mb-10 overflow-hidden border rounded-xl border-primary/30 shadow-neon aspect-video bg-background-card">
-          <iframe 
-            src={lesson.slide_url} 
+          <iframe
+            src={lesson.slide_url}
             title="Bài giảng Slide"
             className="w-full h-full"
             allowFullScreen
@@ -106,7 +111,7 @@ const LessonPage = () => {
             <span className="text-xl">✅</span> Đã hoàn thành bài học
           </div>
         ) : (
-          <button 
+          <button
             onClick={handleComplete}
             disabled={completing}
             className="flex items-center gap-2 px-6 py-3 font-bold text-white transition-all rounded-lg bg-gradient-primary hover:shadow-neon disabled:opacity-50 disabled:cursor-not-allowed"

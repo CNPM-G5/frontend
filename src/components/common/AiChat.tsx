@@ -20,12 +20,14 @@ const AiChat: React.FC<AiChatProps> = ({ lessonId, courseId }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isDegraded, setIsDegraded] = useState(false);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Tự động cuộn xuống cuối khi có tin nhắn mới
+  // Tự động cuộl xuống cuối khi có tin nhắn mới (nhưng không lần đầu load)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messages.length > 1) {  // Chỉ cuộl khi có tin nhắn thực tế, bỏ qua initial message
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
   const handleSend = async () => {
@@ -39,24 +41,24 @@ const AiChat: React.FC<AiChatProps> = ({ lessonId, courseId }) => {
 
     try {
       const response = await aiApi.chatWithAiApi(userMsg.text, lessonId, courseId);
-      
+
       // Nếu backend báo AI lỗi và trả về câu trả lời dự phòng
       if (response.degraded) {
         setIsDegraded(true);
       }
 
-      const aiMsg: Message = { 
-        id: (Date.now() + 1).toString(), 
-        sender: 'ai', 
-        text: response.reply || response.message || 'Xin lỗi, tôi không thể trả lời lúc này.' 
+      const aiMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        sender: 'ai',
+        text: response.reply || response.message || 'Xin lỗi, tôi không thể trả lời lúc này.'
       };
       setMessages(prev => [...prev, aiMsg]);
     } catch (error) {
       console.error("Lỗi khi gọi AI:", error);
-      const errorMsg: Message = { 
-        id: (Date.now() + 1).toString(), 
-        sender: 'ai', 
-        text: 'Đã có lỗi kết nối đến máy chủ AI. Vui lòng thử lại sau.' 
+      const errorMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        sender: 'ai',
+        text: 'Đã có lỗi kết nối đến máy chủ AI. Vui lòng thử lại sau.'
       };
       setMessages(prev => [...prev, errorMsg]);
     } finally {
@@ -80,7 +82,7 @@ const AiChat: React.FC<AiChatProps> = ({ lessonId, courseId }) => {
           <span className="flex items-center justify-center w-8 h-8 text-xl border rounded-full bg-primary/20 border-primary">🤖</span>
           <h3 className="font-bold text-text-light">Trợ lý AI Bài học</h3>
         </div>
-        
+
         {/* Badge Degraded Mode hiển thị khi AI gặp lỗi */}
         {isDegraded && (
           <span className="px-3 py-1 text-xs font-bold text-yellow-500 border rounded-full bg-yellow-500/10 border-yellow-500/30 animate-pulse">
@@ -93,18 +95,17 @@ const AiChat: React.FC<AiChatProps> = ({ lessonId, courseId }) => {
       <div className="flex flex-col p-6 space-y-4 overflow-y-auto h-80 bg-background-dark/50">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div 
-              className={`max-w-[80%] px-5 py-3 rounded-2xl whitespace-pre-wrap ${
-                msg.sender === 'user' 
-                  ? 'bg-gradient-primary text-white rounded-tr-sm shadow-[0_0_15px_rgba(0,210,255,0.2)]' 
+            <div
+              className={`max-w-[80%] px-5 py-3 rounded-2xl whitespace-pre-wrap ${msg.sender === 'user'
+                  ? 'bg-gradient-primary text-white rounded-tr-sm shadow-[0_0_15px_rgba(0,210,255,0.2)]'
                   : 'bg-background-card text-text-light border border-primary/20 rounded-tl-sm'
-              }`}
+                }`}
             >
               {msg.text}
             </div>
           </div>
         ))}
-        
+
         {/* Loading State */}
         {isLoading && (
           <div className="flex justify-start">

@@ -13,7 +13,7 @@ const Courses = () => {
       try {
         setLoading(true);
         // 1. Lấy danh sách khóa học
-        const res : any = await courseApi.getAllCoursesApi();
+        const res: any = await courseApi.getAllCoursesApi();
         const courses = Array.isArray(res) ? res : res.data || [];
 
         // 2. Lấy tiến độ cho từng khóa học
@@ -27,6 +27,12 @@ const Courses = () => {
         });
 
         const fullData = await Promise.all(promises);
+        // Sắp xếp khóa học theo thứ tự tạo (cũ nhất trước)
+        fullData.sort((a, b) => {
+          const dateA = new Date(a.created_at).getTime();
+          const dateB = new Date(b.created_at).getTime();
+          return dateA - dateB;
+        });
         setCoursesProgress(fullData);
       } catch (error) {
         console.error("Lỗi tải danh sách khóa học:", error);
@@ -54,8 +60,8 @@ const Courses = () => {
           {coursesProgress.length > 0 ? coursesProgress.map((course, index) => {
             const orderNumber = (index + 1).toString().padStart(2, '0');
             return (
-              <Link 
-                to={`/dashboard/course/${course.id}`} 
+              <Link
+                to={`/dashboard/course/${course.id}`}
                 key={course.id}
                 className="block p-8 transition-all bg-white border shadow-sm rounded-2xl border-[#e2dcd0] hover:border-primary hover:shadow-neon group"
               >
@@ -74,7 +80,7 @@ const Courses = () => {
                     <span className="text-text-light">{course.progressPercentage}%</span>
                   </div>
                   <div className="w-full h-3 overflow-hidden bg-[#f0ebe1] rounded-full">
-                    <div 
+                    <div
                       className="h-full transition-all duration-1000 bg-primary"
                       style={{ width: `${course.progressPercentage}%` }}
                     ></div>
@@ -83,9 +89,9 @@ const Courses = () => {
               </Link>
             );
           }) : (
-             <div className="col-span-full p-10 text-center bg-white border rounded-xl border-[#e2dcd0] text-text-muted">
-                Bạn chưa có khóa học nào trên hệ thống.
-             </div>
+            <div className="col-span-full p-10 text-center bg-white border rounded-xl border-[#e2dcd0] text-text-muted">
+              Bạn chưa có khóa học nào trên hệ thống.
+            </div>
           )}
         </div>
       )}
