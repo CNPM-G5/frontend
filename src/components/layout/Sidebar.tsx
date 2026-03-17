@@ -18,6 +18,7 @@ const Sidebar = () => {
   };
 
   return (
+    
     <aside className="relative z-20 flex flex-col w-64 h-screen border-r bg-background-sidebar border-primary/20 shadow-[5px_0_15px_rgba(0,210,255,0.05)]">
       {/* Logo */}
       <div className="flex items-center gap-3 p-6 border-b border-primary/20">
@@ -46,6 +47,26 @@ const Sidebar = () => {
           </NavLink>
         ))}
       </nav>
+
+      <nav>
+      {/* ... Các nút Tổng quan, Khóa học hiện tại của bạn ... */}
+
+      {/* 2. CHỈ HIỂN THỊ NÚT NÀY NẾU LÀ ADMIN */}
+      {user?.role === 'admin' && (
+        <NavLink 
+          to="/dashboard/admin" 
+          className={({ isActive }) => `
+            flex items-center gap-3 px-4 py-3 mt-4 mb-2 font-bold transition-all rounded-xl
+            ${isActive 
+              ? 'bg-primary text-white shadow-neon' 
+              : 'text-text-muted hover:bg-background-sidebar hover:text-primary'}
+          `}
+        >
+          <span className="text-xl">⚙️</span>
+          Quản lý Hệ thống
+        </NavLink>
+      )}
+    </nav>
 
       {/* User Profile (Góc dưới cùng) */}
       <div className="flex items-center justify-between p-4 m-4 border rounded-lg bg-background-card border-primary/20">
