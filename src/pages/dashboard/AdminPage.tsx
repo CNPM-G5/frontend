@@ -1,6 +1,7 @@
 // src/pages/dashboard/AdminPage.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { adminApi } from '../../api/adminApi';
+import { courseApi, Course } from '../../api/courseApi';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState<'courses' | 'lessons'>('courses');
@@ -17,6 +18,12 @@ const AdminPage = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // --- LOAD DANH SÁCH COURSES ---
+  const [courses, setCourses] = useState<Course[]>([]);
+  useEffect(() => {
+    courseApi.getAllCoursesApi().then(setCourses).catch(console.error);
+  }, []);
 
   // --- HÀM XÓA CHẠY THẬT ---
   const handleDelete = async (type: 'course' | 'lesson', id: number) => {
@@ -188,14 +195,17 @@ const AdminPage = () => {
 
             <form className="space-y-4" onSubmit={handleCreateLesson}>
 
-              <input
-                type="number"
+              <select
                 required
-                placeholder="Course ID"
                 value={lessonForm.course_id}
-                onChange={(e)=>setLessonForm({...lessonForm,course_id:e.target.value})}
-                className="w-full p-3 bg-background-dark border rounded-lg"
-              />
+                onChange={(e) => setLessonForm({...lessonForm, course_id: e.target.value})}
+                className="w-full p-3 bg-background-dark border rounded-lg text-text-light"
+              >
+                <option value="">-- Chọn khóa học --</option>
+                {courses.map((c) => (
+                  <option key={c.id} value={c.id}>{c.title}</option>
+                ))}
+              </select>
 
               <input
                 type="text"
