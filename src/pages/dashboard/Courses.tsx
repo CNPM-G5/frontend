@@ -1,72 +1,94 @@
 // src/pages/dashboard/Courses.tsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { courseApi, Course } from '../../api/courseApi';
+import { courseApi } from '../../api/courseApi';
+import { progressApi } from '../../api/progressApi';
 
 const Courses = () => {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [coursesProgress, setCoursesProgress] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchProgressData = async () => {
       try {
         setLoading(true);
-        const data = await courseApi.getAllCoursesApi();
-        setCourses(data);
-      } catch (err) {
-        setError('Không thể tải danh sách khóa học. Vui lòng thử lại!');
-        console.error(err);
+        // 1. Lấy danh sách khóa học
+        const res : any = await courseApi.getAllCoursesApi();
+        const courses = Array.isArray(res) ? res : res.data || [];
+
+        // 2. Lấy tiến độ cho từng khóa học
+        const promises = courses.map(async (course: any) => {
+          try {
+            const progress = await progressApi.getCourseProgressApi(course.id);
+            return { ...course, progressPercentage: progress.percentage || 0 };
+          } catch (error) {
+            return { ...course, progressPercentage: 0 };
+          }
+        });
+
+        const fullData = await Promise.all(promises);
+        setCoursesProgress(fullData);
+      } catch (error) {
+        console.error("Lỗi tải danh sách khóa học:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchCourses();
+
+    fetchProgressData();
   }, []);
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-[60vh]">
-      <div className="w-10 h-10 border-4 rounded-full border-t-primary border-primary/20 animate-spin"></div>
-    </div>
-  );
-  
-  if (error) return <div className="p-8 text-center text-red-400 bg-red-500/10 rounded-xl border border-red-500/20">{error}</div>;
-
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex items-center justify-center mb-10">
-        <div className="w-16 h-px bg-gradient-to-r from-transparent to-primary"></div>
-        <h1 className="px-6 text-2xl font-bold tracking-widest text-transparent uppercase bg-clip-text bg-gradient-primary">
-          Danh sách khóa học
-        </h1>
-        <div className="w-16 h-px bg-gradient-to-l from-transparent to-primary"></div>
+    <div className="max-w-6xl mx-auto pb-20">
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold text-text-light">Lộ trình học tập</h1>
+        <p className="text-text-muted">Tiếp tục các khóa học bạn đang theo dõi</p>
       </div>
-      
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {Array.isArray(courses) && courses.map((course) => (
-          <div key={course.id} className="relative flex flex-col h-full p-6 transition-all duration-300 border group rounded-xl bg-background-card border-primary/20 hover:border-primary hover:shadow-neon hover:-translate-y-1">
-            <h2 className="mb-2 text-xl font-bold transition-colors text-text-light group-hover:text-primary">
-              {course.title}
-            </h2>
-            <p className="mb-4 text-sm text-text-muted line-clamp-3 flex-grow">
-              {course.description}
-            </p>
-            
-            <div className="flex items-center justify-between pt-4 mt-auto border-t border-primary/20">
-              <span className="text-sm font-medium text-text-muted flex items-center gap-2">
-                <span className="text-primary">📚</span> {course.lesson_count} bài học có sẵn 
-              </span>
-              {/* Route được trỏ chính xác theo App.tsx của bạn */}
+
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <div className="w-8 h-8 border-4 rounded-full border-t-primary border-[#e2dcd0] animate-spin"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {coursesProgress.length > 0 ? coursesProgress.map((course, index) => {
+            const orderNumber = (index + 1).toString().padStart(2, '0');
+            return (
               <Link 
                 to={`/dashboard/course/${course.id}`} 
-                className="px-4 py-2 text-sm font-semibold text-white transition-all rounded-lg bg-primary/20 hover:bg-gradient-primary hover:shadow-neon"
+                key={course.id}
+                className="block p-8 transition-all bg-white border shadow-sm rounded-2xl border-[#e2dcd0] hover:border-primary hover:shadow-neon group"
               >
-                Xem chi tiết
+                <div className="mb-2 text-5xl font-black text-[#f0ebe1] transition-colors group-hover:text-[#e8dccb]">
+                  {orderNumber}
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-text-light line-clamp-1">
+                  {course.title}
+                </h3>
+                <p className="mb-8 text-sm text-text-muted line-clamp-1">
+                  {course.description || "Tổng quan về môn học"}
+                </p>
+                <div>
+                  <div className="flex justify-between mb-2 text-sm font-bold">
+                    <span className="text-text-muted">Tiến độ</span>
+                    <span className="text-text-light">{course.progressPercentage}%</span>
+                  </div>
+                  <div className="w-full h-3 overflow-hidden bg-[#f0ebe1] rounded-full">
+                    <div 
+                      className="h-full transition-all duration-1000 bg-primary"
+                      style={{ width: `${course.progressPercentage}%` }}
+                    ></div>
+                  </div>
+                </div>
               </Link>
-            </div>
-          </div>
-        ))}
-      </div>
+            );
+          }) : (
+             <div className="col-span-full p-10 text-center bg-white border rounded-xl border-[#e2dcd0] text-text-muted">
+                Bạn chưa có khóa học nào trên hệ thống.
+             </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
