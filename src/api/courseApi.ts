@@ -1,4 +1,3 @@
-// src/api/courseApi.ts
 import axiosClient from './axios'; // Import file axios bạn đã cấu hình ở Iteration 1
 
 // Định nghĩa kiểu dữ liệu cho Khóa học để TypeScript hỗ trợ nhắc code
@@ -69,5 +68,18 @@ export const courseApi = {
     }
 
     return courseData;
+  },
+  createCourseApi: async (data: any) => {
+    return await axiosClient.post('/courses', data); // Hoặc '/admin/courses' tùy Backend nhóm bạn
+  },
+
+  // 2. Cập nhật (Sửa)
+  updateCourseApi: async (id: number, data: any) => {
+    return await axiosClient.put(`/courses/${id}`, data);
+  },
+
+  // 3. Xóa
+  deleteCourseApi: async (id: number) => {
+    return await axiosClient.delete(`/courses/${id}`);
   }
 };
