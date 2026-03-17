@@ -13,7 +13,6 @@ const AdminPage = () => {
     course_id: '', 
     title: '', 
     content: '', 
-    slide_url: '', 
     order_index: '' 
   });
 
@@ -90,7 +89,6 @@ const AdminPage = () => {
         course_id: '',
         title: '',
         content: '',
-        slide_url: '',
         order_index: ''
       });
 
@@ -213,14 +211,6 @@ const AdminPage = () => {
                 placeholder="Nội dung"
                 value={lessonForm.content}
                 onChange={(e)=>setLessonForm({...lessonForm,content:e.target.value})}
-                className="w-full p-3 bg-background-dark border rounded-lg"
-              />
-
-              <input
-                type="url"
-                placeholder="Slide URL"
-                value={lessonForm.slide_url}
-                onChange={(e)=>setLessonForm({...lessonForm,slide_url:e.target.value})}
                 className="w-full p-3 bg-background-dark border rounded-lg"
               />
 
