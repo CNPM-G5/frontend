@@ -16,7 +16,6 @@ import Settings from './pages/dashboard/Settings';
 import AdminRoute from './components/common/AdminRoute';
 import AdminPage from './pages/dashboard/AdminPage';
 import ProfilePage from './pages/dashboard/ProfilePage';
-
 function App() {
   return (
     // 2. Bọc AuthProvider ngoài cùng để toàn app nhận được State Đăng nhập

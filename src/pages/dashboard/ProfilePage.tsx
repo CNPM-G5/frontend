@@ -1,11 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { getProfileApi } from '../../api/authApi';
 import { progressApi, CompletedCourse } from '../../api/progressApi';
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const [completedCourses, setCompletedCourses] = useState<CompletedCourse[]>([]);
   const [loadingProgress, setLoadingProgress] = useState(true);
+
+  useEffect(() => {
+    // Refresh user data từ server
+    getProfileApi()
+      .then((res) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+          login(token, res.data.user);
+        }
+      })
+      .catch((err) => console.error('Error fetching profile:', err));
+  }, []);
 
   useEffect(() => {
     progressApi.getCompletedCoursesApi()
@@ -33,7 +46,15 @@ const ProfilePage = () => {
         <div className="flex-1 p-8 text-center border rounded-xl bg-background-sidebar border-primary/20 flex flex-col items-center shadow-neon">
           <div className="relative mb-6">
             <div className="w-32 h-32 overflow-hidden border-4 rounded-full bg-background-dark border-primary shadow-[0_0_20px_rgba(0,210,255,0.3)]">
-              <span className="flex items-center justify-center w-full h-full text-6xl">🧑‍💻</span>
+              {user?.avatar_url ? (
+                <img 
+                  src={user.avatar_url} 
+                  alt="Avatar" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="flex items-center justify-center w-full h-full text-6xl">🧑‍💻</span>
+              )}
             </div>
             <span className="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-2 border-background-sidebar rounded-full shadow-[0_0_10px_rgba(34,197,94,0.8)]"></span>
           </div>
