@@ -48,7 +48,8 @@ const ProfilePage = () => {
             <div className="w-32 h-32 overflow-hidden border-4 rounded-full bg-background-dark border-primary shadow-[0_0_20px_rgba(0,210,255,0.3)]">
               {user?.avatar_url ? (
                 <img 
-                  src={user.avatar_url} 
+                  key={user.avatar_url}
+                  src={`${user.avatar_url}?t=${new Date().getTime()}`}
                   alt="Avatar" 
                   className="w-full h-full object-cover"
                 />

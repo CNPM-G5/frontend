@@ -1,6 +1,18 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
+  const { user } = useAuth();
+
+  // Thêm timestamp vào URL ảnh để buộc browser load lại (tránh cache)
+  const getAvatarUrl = () => {
+    if (user?.avatar_url) {
+      const timestamp = new Date().getTime();
+      return `${user.avatar_url}?t=${timestamp}`;
+    }
+    return '';
+  };
+
   return (
     <header className="flex items-center justify-end h-16 px-6 border-b bg-background-dark border-primary/20 relative z-10">
       <div className="flex items-center gap-4">
@@ -10,7 +22,16 @@ const Header = () => {
         {/* Avatar nhỏ gọn */}
         <Link to="/dashboard/profile" className="flex items-center gap-2 transition-colors hover:text-primary cursor-pointer">
           <div className="flex items-center justify-center w-8 h-8 overflow-hidden border rounded-full bg-primary/20 border-primary shadow-neon">
-             <span className="text-sm">👤</span>
+             {user?.avatar_url ? (
+              <img 
+                key={user.avatar_url}
+                src={getAvatarUrl()} 
+                alt="Avatar" 
+                className="w-full h-full object-cover" 
+              />
+            ) : (
+              <span className="text-sm">👤</span>
+            )}
           </div>
           <span className="text-xs">▼</span>
         </Link>

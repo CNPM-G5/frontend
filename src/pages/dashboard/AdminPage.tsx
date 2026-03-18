@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { adminApi } from '../../api/adminApi';
-import { courseApi, Course } from '../../api/courseApi';
+import { courseApi, Course, CourseDetailType } from '../../api/courseApi';
+import { Lesson } from '../../api/courseApi';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState<'courses' | 'lessons'>('courses');
@@ -12,9 +13,8 @@ const AdminPage = () => {
   // ==========================================
   
   const [courseForm, setCourseForm] = useState({ title: '', description: '', model_type: '' });
-  const [editingCourseId, setEditingCourseId] = useState<number | null>(null); // State kiểm tra đang Thêm hay Sửa
+  const [editingCourseId, setEditingCourseId] = useState<number | null>(null);
 
-  // Hàm tải lại danh sách khóa học
   const loadCourses = async () => {
     try {
       const data = await courseApi.getAllCoursesApi();
@@ -28,7 +28,6 @@ const AdminPage = () => {
     loadCourses();
   }, []);
 
-  // Hàm Lưu (Dùng chung cho cả Thêm mới và Cập nhật)
   const handleSaveCourse = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!courseForm.title || !courseForm.description) {
@@ -39,16 +38,13 @@ const AdminPage = () => {
     try {
       setIsSubmitting(true);
       if (editingCourseId) {
-        // GỌI API SỬA
         await courseApi.updateCourseApi(editingCourseId, courseForm);
         alert("🎉 Cập nhật khóa học thành công!");
       } else {
-        // GỌI API THÊM MỚI
         await courseApi.createCourseApi(courseForm);
         alert("🎉 Thêm khóa học thành công!");
       }
       
-      // Reset form và tải lại bảng
       setCourseForm({ title: '', description: '', model_type: '' });
       setEditingCourseId(null);
       loadCourses(); 
@@ -59,52 +55,140 @@ const AdminPage = () => {
     }
   };
 
-  // Hàm bấm nút Sửa (Đổ dữ liệu lên form)
   const handleEditCourseClick = (course: Course) => {
     setEditingCourseId(course.id);
     setCourseForm({
       title: course.title,
       description: course.description,
-      model_type: (course as any).model_type || '' // Fallback nếu API có trả về
+      model_type: (course as any).model_type || ''
     });
   };
 
-  // Hàm bấm nút Xóa
   const handleDeleteCourse = async (id: number) => {
     const isConfirm = window.confirm(`⚠️ Bạn có chắc chắn muốn xóa khóa học #${id} này không? Mọi bài học bên trong sẽ bị mất!`);
     if (isConfirm) {
       try {
         await courseApi.deleteCourseApi(id);
         alert("🗑️ Đã xóa khóa học thành công!");
-        loadCourses(); // Tải lại bảng
+        loadCourses();
       } catch (error: any) {
         alert(error.response?.data?.message || "Không thể xóa. Vui lòng thử lại!");
       }
     }
   };
 
-
   // ==========================================
-  // LOGIC QUẢN LÝ BÀI HỌC (LESSONS) - Giữ nguyên của bạn
+  // LOGIC QUẢN LÝ BÀI HỌC (LESSONS) - NEW STRUCTURE
   // ==========================================
-  const [lessonForm, setLessonForm] = useState({ course_id: '', title: '', content: '', order_index: '' });
+  const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
+  const [courseDetail, setCourseDetail] = useState<CourseDetailType | null>(null);
+  const [lessonAction, setLessonAction] = useState<'add' | 'edit' | 'delete' | null>(null);
+  const [lessonForm, setLessonForm] = useState({ title: '', content: '', order_index: '' });
+  const [editingLessonId, setEditingLessonId] = useState<number | null>(null);
+  const [loadingLessons, setLoadingLessons] = useState(false);
 
-  const handleCreateLesson = async (e: React.FormEvent) => {
+  // Hàm tải bài học của khóa học được chọn
+  const handleSelectCourse = async (courseId: number) => {
+    setSelectedCourse(courseId);
+    setLessonAction(null);
+    setEditingLessonId(null);
+    setLessonForm({ title: '', content: '', order_index: '' });
+
+    try {
+      setLoadingLessons(true);
+      const detail = await courseApi.getCourseByIdApi(courseId.toString());
+      setCourseDetail(detail);
+    } catch (error) {
+      console.error('Lỗi tải bài học:', error);
+      alert('Không thể tải bài học. Vui lòng thử lại!');
+    } finally {
+      setLoadingLessons(false);
+    }
+  };
+
+  // Hàm thêm bài học
+  const handleAddLesson = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!lessonForm.title || !lessonForm.content || !lessonForm.order_index) {
+      alert('Vui lòng điền đầy đủ thông tin bài học!');
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       await adminApi.createLesson({
+        course_id: selectedCourse,
         ...lessonForm,
-        course_id: Number(lessonForm.course_id),
         order_index: Number(lessonForm.order_index)
       });
-      alert("🎉 Thêm bài học thành công!");
-      setLessonForm({ course_id: '', title: '', content: '', order_index: '' });
+      alert('🎉 Thêm bài học thành công!');
+      setLessonForm({ title: '', content: '', order_index: '' });
+      setLessonAction(null);
+      if (selectedCourse) {
+        handleSelectCourse(selectedCourse);
+      }
     } catch (error: any) {
-      alert(error.response?.data?.message || "Có lỗi xảy ra khi lưu bài học!");
+      alert(error.response?.data?.message || 'Có lỗi xảy ra khi thêm bài học!');
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Hàm sửa bài học
+  const handleSaveEditLesson = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!lessonForm.title || !lessonForm.content || !lessonForm.order_index || !editingLessonId) {
+      alert('Vui lòng điền đầy đủ thông tin bài học!');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await adminApi.updateLesson(editingLessonId, {
+        title: lessonForm.title,
+        content: lessonForm.content,
+        order_index: Number(lessonForm.order_index)
+      });
+      alert('🎉 Cập nhật bài học thành công!');
+      setLessonForm({ title: '', content: '', order_index: '' });
+      setEditingLessonId(null);
+      setLessonAction(null);
+      if (selectedCourse) {
+        handleSelectCourse(selectedCourse);
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật bài học!');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Hàm xóa bài học
+  const handleDeleteLesson = async (lessonId: number, lessonTitle: string) => {
+    const isConfirm = window.confirm(`⚠️ Bạn có chắc chắn muốn xóa bài học "${lessonTitle}" không?`);
+    if (isConfirm) {
+      try {
+        await adminApi.deleteLesson(lessonId);
+        alert('🗑️ Đã xóa bài học thành công!');
+        setLessonAction(null);
+        if (selectedCourse) {
+          handleSelectCourse(selectedCourse);
+        }
+      } catch (error: any) {
+        alert(error.response?.data?.message || 'Không thể xóa bài học. Vui lòng thử lại!');
+      }
+    }
+  };
+
+  // Hàm bấm nút Sửa (Đổ dữ liệu lên form)
+  const handleEditLessonClick = (lesson: Lesson) => {
+    setEditingLessonId(lesson.id);
+    setLessonForm({
+      title: lesson.title,
+      content: '', // Backend không trả về content trong list, cần fetch riêng
+      order_index: lesson.order_index.toString()
+    });
+    setLessonAction('edit');
   };
 
   return (
@@ -245,53 +329,285 @@ const AdminPage = () => {
         </div>
       )}
 
-      {/* TAB BÀI HỌC (LESSONS) - GIỮ NGUYÊN */}
+      {/* TAB BÀI HỌC (LESSONS) - NEW STRUCTURE */}
       {activeTab === 'lessons' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1 p-6 border rounded-xl bg-background-sidebar border-primary/20">
-            <h2 className="text-xl font-bold text-primary mb-4">Thêm Bài học mới</h2>
-            <form className="space-y-4" onSubmit={handleCreateLesson}>
-              <select
-                required
-                value={lessonForm.course_id}
-                onChange={(e) => setLessonForm({...lessonForm, course_id: e.target.value})}
-                className="w-full p-3 bg-background-dark border border-[#e2dcd0] outline-none rounded-lg text-text-light"
-              >
-                <option value="">-- Chọn khóa học --</option>
-                {courses.map((c) => (
-                  <option key={c.id} value={c.id}>{c.title}</option>
-                ))}
-              </select>
-              <input
-                type="text" required placeholder="Tên bài học"
-                value={lessonForm.title}
-                onChange={(e)=>setLessonForm({...lessonForm,title:e.target.value})}
-                className="w-full p-3 bg-background-dark border border-[#e2dcd0] outline-none text-text-light focus:border-primary rounded-lg"
-              />
-              <textarea
-                required placeholder="Nội dung"
-                value={lessonForm.content}
-                onChange={(e)=>setLessonForm({...lessonForm,content:e.target.value})}
-                className="w-full p-3 bg-background-dark border border-[#e2dcd0] outline-none text-text-light focus:border-primary rounded-lg"
-              />
-              <input
-                type="number" required placeholder="Thứ tự bài học (1, 2, 3...)"
-                value={lessonForm.order_index}
-                onChange={(e)=>setLessonForm({...lessonForm,order_index:e.target.value})}
-                className="w-full p-3 bg-background-dark border border-[#e2dcd0] outline-none text-text-light focus:border-primary rounded-lg"
-              />
-              <button
-                type="submit" disabled={isSubmitting}
-                className="w-full py-3 font-bold text-white rounded-lg bg-primary hover:bg-primary-dark disabled:opacity-50"
-              >
-                {isSubmitting ? "Đang lưu..." : "Lưu Bài học"}
-              </button>
-            </form>
+        <div>
+          {/* CHỌN KHÓA HỌC */}
+          <div className="p-6 border rounded-xl bg-background-sidebar border-primary/20 mb-8">
+            <select
+              value={selectedCourse || ''}
+              onChange={(e) => {
+                const courseId = Number(e.target.value);
+                if (courseId) {
+                  handleSelectCourse(courseId);
+                } else {
+                  setSelectedCourse(null);
+                  setCourseDetail(null);
+                  setLessonAction(null);
+                }
+              }}
+              className="w-full p-3 bg-background-dark border border-[#e2dcd0] outline-none rounded-lg text-text-light"
+            >
+              <option value="">-- Chọn khóa học --</option>
+              {courses.map((c) => (
+                <option key={c.id} value={c.id}>{c.title}</option>
+              ))}
+            </select>
           </div>
-          <div className="lg:col-span-2 p-6 border rounded-xl bg-background-sidebar border-primary/20">
-            <h2 className="text-xl font-bold text-text-light mb-4">Danh sách Bài học</h2>
-            <p className="text-text-muted italic">Tính năng liệt kê bài học sẽ được cập nhật sau...</p>
-          </div>
+
+          {/* CHỌN CHỨC NĂNG (Chỉ hiện khi đã chọn khóa học) */}
+          {selectedCourse && courseDetail && (
+            <div>
+              <div className="p-6 border rounded-xl bg-background-sidebar border-primary/20 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <button
+                    onClick={() => {
+                      setLessonAction('add');
+                      setEditingLessonId(null);
+                      setLessonForm({ title: '', content: '', order_index: '' });
+                    }}
+                    className={`p-4 rounded-lg font-bold transition-all text-white ${
+                      lessonAction === 'add'
+                        ? 'bg-primary shadow-neon'
+                        : 'bg-green-600 hover:bg-green-700'
+                    }`}
+                  >
+                    ➕ Thêm Bài học
+                  </button>
+                  <button
+                    onClick={() => {
+                      setLessonAction('edit');
+                      setEditingLessonId(null);
+                      setLessonForm({ title: '', content: '', order_index: '' });
+                    }}
+                    className={`p-4 rounded-lg font-bold transition-all text-white ${
+                      lessonAction === 'edit'
+                        ? 'bg-primary shadow-neon'
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
+                  >
+                    ✏️ Sửa Bài học
+                  </button>
+                  <button
+                    onClick={() => setLessonAction('delete')}
+                    className={`p-4 rounded-lg font-bold transition-all text-white ${
+                      lessonAction === 'delete'
+                        ? 'bg-primary shadow-neon'
+                        : 'bg-red-600 hover:bg-red-700'
+                    }`}
+                  >
+                    🗑️ Xóa Bài học
+                  </button>
+                </div>
+              </div>
+
+              {/* BƯỚC 3: THÊM BÀI HỌC */}
+              {lessonAction === 'add' && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-1 p-6 border rounded-xl bg-background-sidebar border-primary/20 h-fit">
+                    <h2 className="text-xl font-bold text-primary mb-6">Thêm Bài học mới</h2>
+                    <form className="space-y-4" onSubmit={handleAddLesson}>
+                      <div>
+                        <label className="block text-xs font-bold text-text-muted uppercase mb-1">Tên bài học</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="Tiêu đề bài học"
+                          value={lessonForm.title}
+                          onChange={(e) => setLessonForm({...lessonForm, title: e.target.value})}
+                          className="w-full p-3 bg-background-dark border border-[#e2dcd0] text-text-light outline-none focus:border-primary rounded-lg"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-text-muted uppercase mb-1">Nội dung</label>
+                        <textarea
+                          required
+                          rows={5}
+                          placeholder="Nội dung chi tiết bài học"
+                          value={lessonForm.content}
+                          onChange={(e) => setLessonForm({...lessonForm, content: e.target.value})}
+                          className="w-full p-3 bg-background-dark border border-[#e2dcd0] text-text-light outline-none focus:border-primary rounded-lg resize-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-text-muted uppercase mb-1">Thứ tự bài học</label>
+                        <input
+                          type="number"
+                          required
+                          placeholder="1, 2, 3..."
+                          value={lessonForm.order_index}
+                          onChange={(e) => setLessonForm({...lessonForm, order_index: e.target.value})}
+                          className="w-full p-3 bg-background-dark border border-[#e2dcd0] text-text-light outline-none focus:border-primary rounded-lg"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full py-3 font-bold text-white rounded-lg bg-primary hover:bg-primary-dark disabled:opacity-50 transition-all"
+                      >
+                        {isSubmitting ? "Đang lưu..." : "Lưu Bài học"}
+                      </button>
+                    </form>
+                  </div>
+
+                  <div className="lg:col-span-2 p-6 border rounded-xl bg-background-sidebar border-primary/20">
+                    <h2 className="text-xl font-bold text-text-light mb-4">Danh sách Bài học hiện tại</h2>
+                    {courseDetail.lessons && courseDetail.lessons.length > 0 ? (
+                      <div className="space-y-3">
+                        {courseDetail.lessons.map((lesson) => (
+                          <div key={lesson.id} className="p-4 bg-background-dark rounded-lg border border-primary/10">
+                            <p className="font-bold text-text-light">Bài {lesson.order_index}: {lesson.title}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-text-muted italic">Khóa học này chưa có bài học nào.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* BƯỚC 3: SỬA BÀI HỌC */}
+              {lessonAction === 'edit' && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-1 p-6 border rounded-xl bg-background-sidebar border-primary/20 h-fit">
+                    <h2 className="text-xl font-bold text-primary mb-6">Sửa Bài học</h2>
+                    
+                    {!editingLessonId ? (
+                      <p className="text-text-muted">Chọn bài học từ danh sách bên phải để sửa.</p>
+                    ) : (
+                      <form className="space-y-4" onSubmit={handleSaveEditLesson}>
+                        <div>
+                          <label className="block text-xs font-bold text-text-muted uppercase mb-1">Tên bài học</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Tiêu đề bài học"
+                            value={lessonForm.title}
+                            onChange={(e) => setLessonForm({...lessonForm, title: e.target.value})}
+                            className="w-full p-3 bg-background-dark border border-[#e2dcd0] text-text-light outline-none focus:border-primary rounded-lg"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-text-muted uppercase mb-1">Nội dung</label>
+                          <textarea
+                            required
+                            rows={5}
+                            placeholder="Nội dung chi tiết bài học"
+                            value={lessonForm.content}
+                            onChange={(e) => setLessonForm({...lessonForm, content: e.target.value})}
+                            className="w-full p-3 bg-background-dark border border-[#e2dcd0] text-text-light outline-none focus:border-primary rounded-lg resize-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-text-muted uppercase mb-1">Thứ tự bài học</label>
+                          <input
+                            type="number"
+                            required
+                            placeholder="1, 2, 3..."
+                            value={lessonForm.order_index}
+                            onChange={(e) => setLessonForm({...lessonForm, order_index: e.target.value})}
+                            className="w-full p-3 bg-background-dark border border-[#e2dcd0] text-text-light outline-none focus:border-primary rounded-lg"
+                          />
+                        </div>
+
+                        <div className="flex gap-3 pt-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingLessonId(null);
+                              setLessonForm({ title: '', content: '', order_index: '' });
+                            }}
+                            className="w-1/3 py-3 font-bold transition-colors border rounded-lg text-text-muted border-[#e2dcd0] hover:bg-[#f0ebe1]"
+                          >
+                            Hủy
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="w-2/3 py-3 font-bold text-white rounded-lg bg-primary hover:bg-primary-dark disabled:opacity-50 transition-all"
+                          >
+                            {isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+
+                  <div className="lg:col-span-2 p-6 border rounded-xl bg-background-sidebar border-primary/20">
+                    <h2 className="text-xl font-bold text-text-light mb-4">Danh sách Bài học</h2>
+                    {courseDetail.lessons && courseDetail.lessons.length > 0 ? (
+                      <div className="space-y-2">
+                        {courseDetail.lessons.map((lesson) => (
+                          <div
+                            key={lesson.id}
+                            className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                              editingLessonId === lesson.id
+                                ? 'bg-primary/20 border-primary'
+                                : 'bg-background-dark border-primary/10 hover:border-primary/30'
+                            }`}
+                            onClick={() => handleEditLessonClick(lesson)}
+                          >
+                            <p className="font-bold text-text-light">Bài {lesson.order_index}: {lesson.title}</p>
+                            {editingLessonId === lesson.id && (
+                              <p className="text-primary text-xs mt-1">✓ Đang chỉnh sửa</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-text-muted italic">Khóa học này chưa có bài học nào.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* BƯỚC 3: XÓA BÀI HỌC */}
+              {lessonAction === 'delete' && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="lg:col-span-1 p-6 border rounded-xl bg-background-sidebar border-primary/20">
+                    <h2 className="text-xl font-bold text-red-600 mb-6">⚠️ Xóa Bài học</h2>
+                    <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-4">
+                      <p className="text-red-800 text-sm">
+                        Cảnh báo: Hành động này không thể hoàn tác. Vui lòng chọn bài học và xác nhận xóa.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-1 p-6 border rounded-xl bg-background-sidebar border-primary/20">
+                    <h2 className="text-xl font-bold text-text-light mb-4">Chọn bài học để xóa</h2>
+                    {courseDetail.lessons && courseDetail.lessons.length > 0 ? (
+                      <div className="space-y-2">
+                        {courseDetail.lessons.map((lesson) => (
+                          <div
+                            key={lesson.id}
+                            className="p-4 bg-background-dark rounded-lg border border-primary/10 hover:border-red-500 transition-all flex items-center justify-between"
+                          >
+                            <div className="flex-1">
+                              <p className="font-bold text-text-light">Bài {lesson.order_index}: {lesson.title}</p>
+                            </div>
+                            <button
+                              onClick={() => handleDeleteLesson(lesson.id, lesson.title)}
+                              className="ml-4 px-4 py-2 font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-all"
+                            >
+                              Xóa
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-text-muted italic">Khóa học này chưa có bài học nào.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
