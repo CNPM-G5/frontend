@@ -72,7 +72,11 @@ const Sidebar = () => {
       <div className="flex items-center justify-between p-4 m-4 border rounded-lg bg-background-card border-primary/20">
         <Link to="/dashboard/profile" className="flex items-center gap-3 transition-opacity cursor-pointer hover:opacity-70">
           <div className="flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-700 border rounded-full border-primary">
-            <span className="text-lg">👤</span>
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-lg">👤</span>
+            )}
           </div>
           <div className="max-w-[100px] overflow-hidden">
             <p className="text-sm font-semibold truncate text-text-light" title={user?.email}>

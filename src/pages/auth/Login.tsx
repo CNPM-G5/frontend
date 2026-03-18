@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { loginApi } from '../../api/authApi'; // Import API từ code cũ của bạn
+import { loginApi, getProfileApi } from '../../api/authApi'; // Import API từ code cũ của bạn
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,7 +26,16 @@ const Login = () => {
       // 2. Chuyền token và user vào AuthContext để hệ thống ghi nhớ (Hết bị đá văng)
       login(res.data.token, res.data.user);
       
-      // 3. Chuyển hướng thành công
+      // 3. Fetch full profile để đảm bảo avatar_url được load đúng
+      try {
+        const profileRes = await getProfileApi();
+        login(res.data.token, profileRes.data.user);
+      } catch (err) {
+        // Nếu fetch profile thất bại, vẫn dùng data từ login
+        console.warn('Could not fetch full profile, using login data');
+      }
+      
+      // 4. Chuyển hướng thành công
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại!');

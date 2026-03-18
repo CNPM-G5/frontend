@@ -68,10 +68,10 @@ const Courses = () => {
                 <div className="mb-2 text-5xl font-black text-[#f0ebe1] transition-colors group-hover:text-[#e8dccb]">
                   {orderNumber}
                 </div>
-                <h3 className="mb-2 text-xl font-bold text-text-light line-clamp-1">
+                <h3 className="mb-2 text-xl font-bold text-text-light line-clamp-2">
                   {course.title}
                 </h3>
-                <p className="mb-8 text-sm text-text-muted line-clamp-1">
+                <p className="mb-8 text-sm text-text-muted line-clamp-3">
                   {course.description || "Tổng quan về môn học"}
                 </p>
                 <div>
