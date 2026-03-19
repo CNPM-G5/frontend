@@ -16,10 +16,16 @@ const Login = () => {
   // Logic xử lý y hệt code cũ của bạn
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
     
     try {
+      // Validate email format @gmail.com
+      if (!email.toLowerCase().endsWith('@gmail.com')) {
+        setError('Email phải có định dạng @gmail.com');
+        setLoading(false);
+        return;
+      }
+
       // 1. Gọi API lấy dữ liệu
       const res = await loginApi({ email, password });
       

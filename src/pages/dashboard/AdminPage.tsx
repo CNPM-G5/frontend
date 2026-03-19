@@ -114,12 +114,21 @@ const AdminPage = () => {
       return;
     }
 
+    const orderIndex = Number(lessonForm.order_index);
+    const maxOrderIndex = (courseDetail?.lessons?.length || 0) + 1;
+
+    // Validate order_index
+    if (orderIndex < 1 || orderIndex > maxOrderIndex) {
+      alert(`❌ Thứ tự bài học phải từ 1 đến ${maxOrderIndex}`);
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       await adminApi.createLesson({
         course_id: selectedCourse,
         ...lessonForm,
-        order_index: Number(lessonForm.order_index)
+        order_index: orderIndex
       });
       alert('🎉 Thêm bài học thành công!');
       setLessonForm({ title: '', content: '', order_index: '' });
@@ -142,12 +151,21 @@ const AdminPage = () => {
       return;
     }
 
+    const orderIndex = Number(lessonForm.order_index);
+    const maxOrderIndex = (courseDetail?.lessons?.length || 0) + 1;
+
+    // Validate order_index
+    if (orderIndex < 1 || orderIndex > maxOrderIndex) {
+      alert(`❌ Thứ tự bài học phải từ 1 đến ${maxOrderIndex}`);
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       await adminApi.updateLesson(editingLessonId, {
         title: lessonForm.title,
         content: lessonForm.content,
-        order_index: Number(lessonForm.order_index)
+        order_index: orderIndex
       });
       alert('🎉 Cập nhật bài học thành công!');
       setLessonForm({ title: '', content: '', order_index: '' });
@@ -364,7 +382,9 @@ const AdminPage = () => {
                     onClick={() => {
                       setLessonAction('add');
                       setEditingLessonId(null);
-                      setLessonForm({ title: '', content: '', order_index: '' });
+                      // Auto-fill order_index based on current number of lessons
+                      const nextOrderIndex = (courseDetail?.lessons?.length || 0) + 1;
+                      setLessonForm({ title: '', content: '', order_index: nextOrderIndex.toString() });
                     }}
                     className={`p-4 rounded-lg font-bold transition-all text-white ${
                       lessonAction === 'add'
@@ -436,6 +456,8 @@ const AdminPage = () => {
                         <input
                           type="number"
                           required
+                          min="1"
+                          max={(courseDetail?.lessons?.length || 0) + 1}
                           placeholder="1, 2, 3..."
                           value={lessonForm.order_index}
                           onChange={(e) => setLessonForm({...lessonForm, order_index: e.target.value})}
@@ -509,6 +531,8 @@ const AdminPage = () => {
                           <input
                             type="number"
                             required
+                            min="1"
+                            max={(courseDetail?.lessons?.length || 0) + 1}
                             placeholder="1, 2, 3..."
                             value={lessonForm.order_index}
                             onChange={(e) => setLessonForm({...lessonForm, order_index: e.target.value})}
