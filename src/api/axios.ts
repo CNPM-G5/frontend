@@ -36,9 +36,11 @@ axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Nếu lỗi 401 (Unauthorized), có thể tự động logout và xóa token
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      // Nếu lỗi 401 (Unauthorized), chỉ redirect nếu KHÔNG ở trang login
+      if (!window.location.pathname.includes('/login')) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
