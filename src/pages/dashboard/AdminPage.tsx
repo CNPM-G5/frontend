@@ -227,13 +227,13 @@ const AdminPage = () => {
           onClick={() => setActiveTab('courses')}
           className={`pb-3 px-4 font-bold ${activeTab === 'courses' ? 'text-primary border-b-2 border-primary' : 'text-text-muted hover:text-primary'}`}
         >
-          📚 Quản lý Khóa học
+          Quản lý Khóa học
         </button>
         <button 
           onClick={() => setActiveTab('lessons')}
           className={`pb-3 px-4 font-bold ${activeTab === 'lessons' ? 'text-primary border-b-2 border-primary' : 'text-text-muted hover:text-primary'}`}
         >
-          📋 Quản lý Bài học
+          Quản lý Bài học
         </button>
       </div>
 
@@ -579,7 +579,7 @@ const AdminPage = () => {
                           >
                             <p className="font-bold text-text-light">Bài {lesson.order_index}: {lesson.title}</p>
                             {editingLessonId === lesson.id && (
-                              <p className="text-primary text-xs mt-1">✓ Đang chỉnh sửa</p>
+                              <p className="text-primary text-xs mt-1">Đang chỉnh sửa</p>
                             )}
                           </div>
                         ))}
@@ -595,7 +595,7 @@ const AdminPage = () => {
               {lessonAction === 'delete' && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="lg:col-span-1 p-6 border rounded-xl bg-background-sidebar border-primary/20">
-                    <h2 className="text-xl font-bold text-red-600 mb-6">⚠️ Xóa Bài học</h2>
+                    <h2 className="text-xl font-bold text-red-600 mb-6">Xóa Bài học</h2>
                     <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-4">
                       <p className="text-red-800 text-sm">
                         Cảnh báo: Hành động này không thể hoàn tác. Vui lòng chọn bài học và xác nhận xóa.
