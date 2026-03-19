@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { lessonApi, LessonDetail } from '../../api/lessonApi';
 import AiChat from '../../components/common/AiChat';
 import axiosClient from '../../api/axios';
+import ReactMarkdown from 'react-markdown';
 
 const LessonPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -99,8 +100,8 @@ const LessonPage = () => {
       {/* Nội dung bài giảng (Content) */}
       <div className="p-8 mb-10 border rounded-xl bg-background-card border-primary/20">
         <h3 className="mb-4 text-xl font-bold text-primary">Nội dung bài học</h3>
-        <div className="leading-relaxed text-text-light/90 whitespace-pre-wrap">
-          {lesson.content}
+        <div className="leading-relaxed text-text-light/90 prose prose-sm max-w-none prose-headings:text-text-light prose-p:text-text-light/90 prose-strong:text-text-light prose-li:text-text-light/90 prose-code:text-primary">
+          <ReactMarkdown>{lesson.content?.replace(/\\\s*$/gm, '').replace(/\\\n/g, '\n')}</ReactMarkdown>
         </div>
       </div>
 

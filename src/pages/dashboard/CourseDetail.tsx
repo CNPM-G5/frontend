@@ -3,6 +3,13 @@ import { useParams, Link } from 'react-router-dom';
 import { courseApi, CourseDetailType } from '../../api/courseApi';
 import { progressApi, CourseProgress } from '../../api/progressApi';
 
+const stripMarkdown = (text: string) =>
+  text?.replace(/(\*\*|__)(.*?)\1/g, '$2')
+       .replace(/(\*|_)(.*?)\1/g, '$2')
+       .replace(/\\\s*$/gm, '')
+       .replace(/\\(.)/g, '$1')
+       .trim() || '';
+
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [course, setCourse] = useState<CourseDetailType | null>(null);
@@ -56,10 +63,10 @@ const CourseDetail = () => {
       {/* Header Khóa học */}
       <div className="mb-10">
         <h1 className="mb-4 text-4xl font-bold leading-tight text-text-light">
-          {course.title}
+          {stripMarkdown(course.title)}
         </h1>
         <p className="text-lg text-text-muted">
-          {course.description}
+          {stripMarkdown(course.description)}
         </p>
       </div>
 
