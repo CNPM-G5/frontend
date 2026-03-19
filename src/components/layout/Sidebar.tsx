@@ -62,7 +62,7 @@ const Sidebar = () => {
               : 'text-text-muted hover:bg-background-sidebar hover:text-primary'}
           `}
         >
-          <span className="text-xl">⚙️</span>
+          <span className="text-xl"></span>
           Quản lý Hệ thống
         </NavLink>
       )}
