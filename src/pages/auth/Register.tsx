@@ -17,7 +17,6 @@ const Register = () => {
 
   const handleRegister = async (e: React.MouseEvent) => {
     e.preventDefault();
-    setError('');
 
     // 1. Dọn dẹp khoảng trắng
     const cleanName = name.trim();
@@ -27,6 +26,12 @@ const Register = () => {
     // 2. Kiểm tra điều kiện cơ bản (Validation)
     if (!cleanName || !cleanEmail || !cleanPassword) {
       setError('Vui lòng điền đầy đủ thông tin!');
+      return;
+    }
+
+    // 3. Validate email format @gmail.com
+    if (!cleanEmail.toLowerCase().endsWith('@gmail.com')) {
+      setError('Email phải có định dạng @gmail.com');
       return;
     }
 
@@ -129,7 +134,10 @@ const Register = () => {
                   type="password"
                   placeholder="Nhập mật khẩu"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError('');
+                  }}
                   className="w-full py-3 px-4 transition-colors bg-white border border-[#e2dcd0] rounded-lg outline-none text-text-light focus:border-primary focus:ring-1 focus:ring-primary"
                 />
               </div>

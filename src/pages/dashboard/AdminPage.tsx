@@ -114,12 +114,21 @@ const AdminPage = () => {
       return;
     }
 
+    const orderIndex = Number(lessonForm.order_index);
+    const maxOrderIndex = (courseDetail?.lessons?.length || 0) + 1;
+
+    // Validate order_index
+    if (orderIndex < 1 || orderIndex > maxOrderIndex) {
+      alert(`❌ Thứ tự bài học phải từ 1 đến ${maxOrderIndex}`);
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       await adminApi.createLesson({
         course_id: selectedCourse,
         ...lessonForm,
-        order_index: Number(lessonForm.order_index)
+        order_index: orderIndex
       });
       alert('🎉 Thêm bài học thành công!');
       setLessonForm({ title: '', content: '', order_index: '' });
@@ -142,12 +151,21 @@ const AdminPage = () => {
       return;
     }
 
+    const orderIndex = Number(lessonForm.order_index);
+    const maxOrderIndex = (courseDetail?.lessons?.length || 0) + 1;
+
+    // Validate order_index
+    if (orderIndex < 1 || orderIndex > maxOrderIndex) {
+      alert(`❌ Thứ tự bài học phải từ 1 đến ${maxOrderIndex}`);
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       await adminApi.updateLesson(editingLessonId, {
         title: lessonForm.title,
         content: lessonForm.content,
-        order_index: Number(lessonForm.order_index)
+        order_index: orderIndex
       });
       alert('🎉 Cập nhật bài học thành công!');
       setLessonForm({ title: '', content: '', order_index: '' });
@@ -209,13 +227,13 @@ const AdminPage = () => {
           onClick={() => setActiveTab('courses')}
           className={`pb-3 px-4 font-bold ${activeTab === 'courses' ? 'text-primary border-b-2 border-primary' : 'text-text-muted hover:text-primary'}`}
         >
-          📚 Quản lý Khóa học
+          Quản lý Khóa học
         </button>
         <button 
           onClick={() => setActiveTab('lessons')}
           className={`pb-3 px-4 font-bold ${activeTab === 'lessons' ? 'text-primary border-b-2 border-primary' : 'text-text-muted hover:text-primary'}`}
         >
-          📋 Quản lý Bài học
+          Quản lý Bài học
         </button>
       </div>
 
@@ -364,7 +382,9 @@ const AdminPage = () => {
                     onClick={() => {
                       setLessonAction('add');
                       setEditingLessonId(null);
-                      setLessonForm({ title: '', content: '', order_index: '' });
+                      // Auto-fill order_index based on current number of lessons
+                      const nextOrderIndex = (courseDetail?.lessons?.length || 0) + 1;
+                      setLessonForm({ title: '', content: '', order_index: nextOrderIndex.toString() });
                     }}
                     className={`p-4 rounded-lg font-bold transition-all text-white ${
                       lessonAction === 'add'
@@ -372,7 +392,7 @@ const AdminPage = () => {
                         : 'bg-green-600 hover:bg-green-700'
                     }`}
                   >
-                    ➕ Thêm Bài học
+                    Thêm Bài học
                   </button>
                   <button
                     onClick={() => {
@@ -386,7 +406,7 @@ const AdminPage = () => {
                         : 'bg-blue-600 hover:bg-blue-700'
                     }`}
                   >
-                    ✏️ Sửa Bài học
+                    Sửa Bài học
                   </button>
                   <button
                     onClick={() => setLessonAction('delete')}
@@ -396,7 +416,7 @@ const AdminPage = () => {
                         : 'bg-red-600 hover:bg-red-700'
                     }`}
                   >
-                    🗑️ Xóa Bài học
+                    Xóa Bài học
                   </button>
                 </div>
               </div>
@@ -436,6 +456,8 @@ const AdminPage = () => {
                         <input
                           type="number"
                           required
+                          min="1"
+                          max={(courseDetail?.lessons?.length || 0) + 1}
                           placeholder="1, 2, 3..."
                           value={lessonForm.order_index}
                           onChange={(e) => setLessonForm({...lessonForm, order_index: e.target.value})}
@@ -509,6 +531,8 @@ const AdminPage = () => {
                           <input
                             type="number"
                             required
+                            min="1"
+                            max={(courseDetail?.lessons?.length || 0) + 1}
                             placeholder="1, 2, 3..."
                             value={lessonForm.order_index}
                             onChange={(e) => setLessonForm({...lessonForm, order_index: e.target.value})}
@@ -555,7 +579,7 @@ const AdminPage = () => {
                           >
                             <p className="font-bold text-text-light">Bài {lesson.order_index}: {lesson.title}</p>
                             {editingLessonId === lesson.id && (
-                              <p className="text-primary text-xs mt-1">✓ Đang chỉnh sửa</p>
+                              <p className="text-primary text-xs mt-1">Đang chỉnh sửa</p>
                             )}
                           </div>
                         ))}
@@ -571,7 +595,7 @@ const AdminPage = () => {
               {lessonAction === 'delete' && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="lg:col-span-1 p-6 border rounded-xl bg-background-sidebar border-primary/20">
-                    <h2 className="text-xl font-bold text-red-600 mb-6">⚠️ Xóa Bài học</h2>
+                    <h2 className="text-xl font-bold text-red-600 mb-6">Xóa Bài học</h2>
                     <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-4">
                       <p className="text-red-800 text-sm">
                         Cảnh báo: Hành động này không thể hoàn tác. Vui lòng chọn bài học và xác nhận xóa.

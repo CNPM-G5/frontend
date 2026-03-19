@@ -12,6 +12,7 @@ import Overview from './pages/dashboard/Overview';
 import CourseDetail from './pages/dashboard/CourseDetail';
 import Courses from './pages/dashboard/Courses';
 import Settings from './pages/dashboard/Settings';
+import NotFound from './pages/NotFound';
 
 import AdminRoute from './components/common/AdminRoute';
 import AdminPage from './pages/dashboard/AdminPage';
@@ -44,6 +45,9 @@ function App() {
               <Route path="settings" element={<Settings />} />
             </Route>
           </Route>
+
+          {/* 404 Route - Phải để cuối cùng */}
+          <Route path="*" element={<NotFound />} />
 
         </Routes>
       </BrowserRouter>
