@@ -307,7 +307,6 @@ const AdminPage = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b-2 border-primary/20 text-text-muted text-sm uppercase tracking-wider">
-                    <th className="pb-3 pr-4">ID</th>
                     <th className="pb-3 pr-4">Tên khóa học</th>
                     <th className="pb-3 text-right">Thao tác</th>
                   </tr>
@@ -320,7 +319,6 @@ const AdminPage = () => {
                   ) : (
                     courses.map((course) => (
                       <tr key={course.id} className="border-b border-primary/10 hover:bg-[#faf7f0] transition-colors">
-                        <td className="py-4 pr-4 font-medium text-text-muted">#{course.id}</td>
                         <td className="py-4 pr-4 font-bold text-text-light">{course.title}</td>
                         <td className="py-4 text-right space-x-4">
                           <button 

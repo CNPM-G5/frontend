@@ -4,6 +4,14 @@ import { Link } from 'react-router-dom';
 import { courseApi } from '../../api/courseApi';
 import { progressApi } from '../../api/progressApi';
 
+// Strip markdown syntax để hiển thị plain text trên card
+const stripMarkdown = (text: string) =>
+  text?.replace(/(\*\*|__)(.*?)\1/g, '$2')
+       .replace(/(\*|_)(.*?)\1/g, '$2')
+       .replace(/\\\s*$/gm, '')
+       .replace(/\\(.)/g, '$1')
+       .trim() || '';
+
 const Courses = () => {
   const [coursesProgress, setCoursesProgress] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,10 +77,10 @@ const Courses = () => {
                   {orderNumber}
                 </div>
                 <h3 className="mb-2 text-xl font-bold text-text-light line-clamp-2">
-                  {course.title}
+                  {stripMarkdown(course.title)}
                 </h3>
                 <p className="mb-8 text-sm text-text-muted line-clamp-3">
-                  {course.description || "Tổng quan về môn học"}
+                  {stripMarkdown(course.description) || "Tổng quan về môn học"}
                 </p>
                 <div>
                   <div className="flex justify-between mb-2 text-sm font-bold">
