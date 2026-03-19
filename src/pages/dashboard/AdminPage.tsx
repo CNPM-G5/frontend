@@ -392,7 +392,7 @@ const AdminPage = () => {
                         : 'bg-green-600 hover:bg-green-700'
                     }`}
                   >
-                    ➕ Thêm Bài học
+                    Thêm Bài học
                   </button>
                   <button
                     onClick={() => {
@@ -406,7 +406,7 @@ const AdminPage = () => {
                         : 'bg-blue-600 hover:bg-blue-700'
                     }`}
                   >
-                    ✏️ Sửa Bài học
+                    Sửa Bài học
                   </button>
                   <button
                     onClick={() => setLessonAction('delete')}
@@ -416,7 +416,7 @@ const AdminPage = () => {
                         : 'bg-red-600 hover:bg-red-700'
                     }`}
                   >
-                    🗑️ Xóa Bài học
+                    Xóa Bài học
                   </button>
                 </div>
               </div>

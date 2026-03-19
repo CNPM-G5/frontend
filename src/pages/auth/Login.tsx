@@ -89,7 +89,7 @@ const Login = () => {
           {/* HIỂN THỊ LỖI (Được mang từ code cũ sang) */}
           {error && (
             <div className="p-3 mb-6 text-sm font-medium text-red-500 border rounded-lg bg-red-500/10 border-red-500/50">
-              ⚠️ {error}
+               {error}
             </div>
           )}
 
