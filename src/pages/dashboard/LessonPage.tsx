@@ -5,6 +5,58 @@ import { lessonApi, LessonDetail } from '../../api/lessonApi';
 import AiChat from '../../components/common/AiChat';
 import axiosClient from '../../api/axios';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+// Fix content từ DB: đảm bảo list items xuống dòng đúng
+const formatContent = (text: string) => {
+  if (!text) return '';
+
+  let result = text
+    // 1. Fix bold bị split dòng: **text\\\n** → **text**
+    .replace(/\*\*([^*]+)\\\s*\n\s*\*\*/g, '**$1**')
+    // 2. Xóa \ thừa cuối dòng (trước newline hoặc cuối string)
+    .replace(/\\\s*\n/g, '\n')
+    .replace(/\\\s*$/gm, '')
+    // 3. Convert bullet unicode • thành markdown list -
+    .replace(/^[•]\s*/gm, '- ')
+    // 4. Thêm blank line trước heading ###/####
+    .replace(/([^\n])\n(#{1,6}\s)/g, '$1\n\n$2')
+    // 5. Thêm blank line trước list item -
+    .replace(/([^\n])\n(-\s)/g, '$1\n\n$2')
+    // 6. Thêm blank line sau list item trước text thường
+    .replace(/(^-\s[^\n]+)\n([^-\s#\n])/gm, '$1\n\n$2')
+    // 7. Thêm blank line trước → arrow
+    .replace(/([^\n])\n(→)/g, '$1\n\n$2');
+
+  // 8. Convert bảng pandoc/rst format thành markdown table
+  // Pattern: dòng --- ở đầu, rows với spacing, dòng --- ở cuối
+  result = result.replace(
+    /[ \t]*---+\s*\n([\s\S]+?)\n[ \t]*---+/g,
+    (_, tableBody) => {
+      const rows = tableBody
+        .split('\n')
+        .map((l: string) => l.trim())
+        .filter((l: string) => l && l !== '--- ---' && l !== '---');
+
+      if (rows.length < 2) return tableBody;
+
+      // Parse mỗi row: split bởi 2+ spaces
+      const parsed = rows.map((r: string) => r.split(/\s{2,}/));
+      const colCount = Math.max(...parsed.map((r: string[]) => r.length));
+      if (colCount < 2) return tableBody;
+
+      const header = parsed[0];
+      const separator = Array(colCount).fill('---');
+      const body = parsed.slice(1);
+
+      const toRow = (cols: string[]) => '| ' + cols.map((c: string) => c || '').join(' | ') + ' |';
+
+      return [toRow(header), toRow(separator), ...body.map(toRow)].join('\n');
+    }
+  );
+
+  return result;
+};
 
 const LessonPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -100,8 +152,8 @@ const LessonPage = () => {
       {/* Nội dung bài giảng (Content) */}
       <div className="p-8 mb-10 border rounded-xl bg-background-card border-primary/20">
         <h3 className="mb-4 text-xl font-bold text-primary">Nội dung bài học</h3>
-        <div className="leading-relaxed text-text-light/90 prose prose-sm max-w-none prose-headings:text-text-light prose-p:text-text-light/90 prose-strong:text-text-light prose-li:text-text-light/90 prose-code:text-primary">
-          <ReactMarkdown>{lesson.content?.replace(/\\\s*$/gm, '').replace(/\\\n/g, '\n')}</ReactMarkdown>
+        <div className="leading-relaxed text-text-light/90 prose prose-sm max-w-none prose-headings:text-text-light prose-p:text-text-light/90 prose-strong:text-text-light prose-li:text-text-light/90 prose-code:text-primary prose-table:w-full prose-th:bg-primary/10 prose-th:text-text-light prose-th:p-2 prose-td:p-2 prose-td:border prose-td:border-primary/20 prose-tr:border-b prose-tr:border-primary/10">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{formatContent(lesson.content)}</ReactMarkdown>
         </div>
       </div>
 
