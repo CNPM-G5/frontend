@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getProfileApi } from '../../api/authApi';
 import { progressApi, CompletedCourse } from '../../api/progressApi';
+import { HiCheckCircle } from "react-icons/hi"; // Heroicons
+
 
 const ProfilePage = () => {
   const { user, login } = useAuth();
@@ -47,10 +49,10 @@ const ProfilePage = () => {
           <div className="relative mb-6">
             <div className="w-32 h-32 overflow-hidden border-4 rounded-full bg-background-dark border-primary shadow-[0_0_20px_rgba(0,210,255,0.3)]">
               {user?.avatar_url ? (
-                <img 
+                <img
                   key={user.avatar_url}
                   src={`${user.avatar_url}?t=${new Date().getTime()}`}
-                  alt="Avatar" 
+                  alt="Avatar"
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -101,7 +103,7 @@ const ProfilePage = () => {
                 <div className="space-y-2">
                   {completedCourses.map(c => (
                     <div key={c.id} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/20 text-sm">
-                      <span className="text-green-400">✅</span>
+                      <span className="text-green-400"><HiCheckCircle className="text-green-600 w-6 h-6" /></span>
                       <span className="text-text-light font-medium">{c.title}</span>
                       <span className="ml-auto text-text-muted">{c.totalLessons} bài</span>
                     </div>
@@ -115,7 +117,7 @@ const ProfilePage = () => {
           <div className="p-6 border rounded-xl bg-background-card border-primary/20 flex-1">
             <h3 className="text-lg font-bold text-text-light mb-4">Trạng thái tài khoản</h3>
             <div className="flex items-center gap-4 p-4 rounded-lg bg-green-500/10 border border-green-500/30">
-              <span className="text-2xl">✅</span>
+              <span className="text-2xl"><HiCheckCircle className="text-green-600 w-6 h-6" /></span>
               <div>
                 <p className="font-bold text-green-400">Tài khoản đang hoạt động</p>
                 <p className="text-sm text-green-500/70">Bạn có thể truy cập toàn bộ nội dung khóa học.</p>

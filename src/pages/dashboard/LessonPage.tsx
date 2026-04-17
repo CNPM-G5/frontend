@@ -6,6 +6,8 @@ import AiChat from '../../components/common/AiChat';
 import axiosClient from '../../api/axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { HiCheckCircle } from "react-icons/hi"; // Heroicons
+import { FaRegCircle } from "react-icons/fa";   // FontAwesome
 
 // Fix content từ DB: đảm bảo list items xuống dòng đúng
 const formatContent = (text: string) => {
@@ -161,7 +163,9 @@ const LessonPage = () => {
       <div className="flex justify-end pt-6 border-t border-primary/20">
         {lesson.is_completed ? (
           <div className="flex items-center gap-2 px-6 py-3 font-bold text-green-400 border border-green-500/30 rounded-lg bg-green-500/10">
-            <span className="text-xl">✅</span> Đã hoàn thành bài học
+            <span className="text-xl">
+              <HiCheckCircle className="text-green-600 w-6 h-6" />
+            </span> Đã hoàn thành bài học
           </div>
         ) : (
           <button

@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { courseApi, CourseDetailType } from '../../api/courseApi';
 import { progressApi, CourseProgress } from '../../api/progressApi';
+import { HiCheckCircle } from "react-icons/hi"; // Heroicons
+import { FaRegCircle } from "react-icons/fa";   // FontAwesome
 
 const stripMarkdown = (text: string) =>
   text?.replace(/(\*\*|__)(.*?)\1/g, '$2')
-       .replace(/(\*|_)(.*?)\1/g, '$2')
-       .replace(/\\\s*$/gm, '')
-       .replace(/\\(.)/g, '$1')
-       .trim() || '';
+    .replace(/(\*|_)(.*?)\1/g, '$2')
+    .replace(/\\\s*$/gm, '')
+    .replace(/\\(.)/g, '$1')
+    .trim() || '';
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,13 +24,13 @@ const CourseDetail = () => {
       if (!id) return;
       try {
         setLoading(true);
-        
+
         // Gọi song song 2 API: Lấy thông tin khóa học VÀ Lấy tiến độ 
         const [courseData, progressData] = await Promise.all([
           courseApi.getCourseByIdApi(id),
           progressApi.getCourseProgressApi(id).catch(() => null) // Nếu API lỗi tạm thời bỏ qua để không sập trang
         ]);
-        
+
         setCourse(courseData);
         setProgress(progressData);
       } catch (err) {
@@ -79,11 +81,11 @@ const CourseDetail = () => {
               {progress.completed}/{progress.total} bài đã hoàn thành ({progress.percentage}%) {/* Text yêu cầu  */}
             </span>
           </div>
-          
+
           {/* Thanh chứa nền xám nhạt */}
           <div className="w-full h-3 overflow-hidden bg-[#f0ebe1] rounded-full">
             {/* Thanh phần trăm chạy màu Vàng Nâu */}
-            <div 
+            <div
               className="h-full transition-all duration-1000 bg-primary"
               style={{ width: `${progress.percentage}%` }}
             ></div>
@@ -107,35 +109,32 @@ const CourseDetail = () => {
             {Array.isArray(course.lessons) && course.lessons
               .sort((a, b) => a.order_index - b.order_index)
               .map((lesson) => {
-                
+
                 // Logic kiểm tra hoàn thành 
                 const isCompleted = progress?.completed_lesson_ids?.includes(lesson.id) || lesson.is_completed;
 
                 return (
-                  <Link 
+                  <Link
                     to={`/dashboard/lesson/${lesson.id}`}
-                    key={lesson.id} 
-                    className={`flex items-center justify-between p-5 transition-all duration-300 border cursor-pointer rounded-xl group ${
-                      isCompleted 
-                        ? 'bg-[#faf7f0] border-primary/30' // Nền bài đã học
-                        : 'bg-white border-[#e2dcd0] hover:border-primary' // Nền bài chưa học
-                    }`}
+                    key={lesson.id}
+                    className={`flex items-center justify-between p-5 transition-all duration-300 border cursor-pointer rounded-xl group ${isCompleted
+                      ? 'bg-[#faf7f0] border-primary/30' // Nền bài đã học
+                      : 'bg-white border-[#e2dcd0] hover:border-primary' // Nền bài chưa học
+                      }`}
                   >
                     <div className="flex items-center gap-4">
                       {/* Icon ✅ hoặc ○  */}
-                      <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm transition-colors ${
-                        isCompleted ? 'bg-green-100 text-green-600' : 'bg-[#f0ebe1] text-text-muted group-hover:bg-primary/10 group-hover:text-primary'
-                      }`}>
-                        {isCompleted ? '✅' : '○'}
+                      <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm transition-colors ${isCompleted ? 'bg-green-100 text-green-600' : 'bg-[#f0ebe1] text-text-muted group-hover:bg-primary/10 group-hover:text-primary'
+                        }`}>
+                        {isCompleted ? <HiCheckCircle className="text-green-600 w-6 h-6" /> : <FaRegCircle className="w-6 h-6" />}
                       </div>
-                      
-                      <h3 className={`text-lg font-medium transition-colors ${
-                        isCompleted ? 'text-text-light' : 'text-text-muted group-hover:text-primary'
-                      }`}>
+
+                      <h3 className={`text-lg font-medium transition-colors ${isCompleted ? 'text-text-light' : 'text-text-muted group-hover:text-primary'
+                        }`}>
                         {lesson.title}
                       </h3>
                     </div>
-                    
+
                     <div className="text-text-muted group-hover:text-primary">
                       <svg className="w-5 h-5 transition-transform transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -143,7 +142,7 @@ const CourseDetail = () => {
                     </div>
                   </Link>
                 );
-            })}
+              })}
           </div>
         )}
       </div>
